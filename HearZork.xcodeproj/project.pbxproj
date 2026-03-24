@@ -31,6 +31,7 @@
 		C5AFF3732133811EA75BDDDE /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */; };
 		CEDB282D12B3650C941628EB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
 		D1D9B1B94F8A6376682893A4 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4384E81873394A514CBE95 /* Instruction.swift */; };
+		D7AD3A58D9F82E16427DBF54 /* ComplianceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090F1270886246840C5277F4 /* ComplianceTests.swift */; };
 		DCA3AB761A46E8AC2CEB8BFC /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09E87248F188104103E5385 /* GameViewModel.swift */; };
 		E2BE47B9ED0DEA8D00A1993F /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09E87248F188104103E5385 /* GameViewModel.swift */; };
 		EF75D67CF7E8EDA6F3A65DDB /* HearZorkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		090F1270886246840C5277F4 /* ComplianceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplianceTests.swift; sourceTree = "<group>"; };
 		0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEncoderTests.swift; sourceTree = "<group>"; };
 		12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
 		17152953C9D4752C85437CF0 /* IOSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSystem.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 		A74D0FD28E4248FE55A22D9C /* ZMachineTests */ = {
 			isa = PBXGroup;
 			children = (
+				090F1270886246840C5277F4 /* ComplianceTests.swift */,
 				325635E6AC606413D71BBA28 /* IntegrationTests.swift */,
 				C9460AD14980414F9A3F61CC /* MemoryTests.swift */,
 				0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */,
@@ -256,6 +259,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7AD3A58D9F82E16427DBF54 /* ComplianceTests.swift in Sources */,
 				F4A82081B8DA0DAD63E90861 /* IntegrationTests.swift in Sources */,
 				85F316B98A8629A196AD1AC1 /* MemoryTests.swift in Sources */,
 				B8769D73357DEB4CF9A39EFE /* TextEncoderTests.swift in Sources */,

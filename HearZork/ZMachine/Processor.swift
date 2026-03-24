@@ -52,12 +52,13 @@ final class Processor: @unchecked Sendable {
 
     func start() async {
         header.configureInterpreter()
-        if version <= 5 {
-            pc = Int(header.initialPC)
-        } else {
-            // V6+: call main routine
+        if version == 6 {
+            // V6: call main routine at packed address
             let mainAddr = memory.unpackRoutineAddress(header.initialPC)
             callRoutine(mainAddr, args: [], storeVar: nil)
+        } else {
+            // V1-5, V7, V8: initialPC is a direct byte address
+            pc = Int(header.initialPC)
         }
         running = true
         await run()
@@ -107,6 +108,21 @@ final class Processor: @unchecked Sendable {
             return currentFrame.stack.last ?? 0
         }
         return readVariable(varNum)
+    }
+
+    /// Write to a variable using indirect reference semantics (§6.3.4).
+    /// When varNum is 0 (stack pointer), replaces the top of stack in place
+    /// instead of pushing a new value.
+    func indirectWriteVariable(_ varNum: UInt8, value: UInt16) {
+        if varNum == 0x00 {
+            if !currentFrame.stack.isEmpty {
+                currentFrame.stack[currentFrame.stack.count - 1] = value
+            } else {
+                currentFrame.stack.append(value)
+            }
+        } else {
+            writeVariable(varNum, value: value)
+        }
     }
 
     /// Resolve operands: variables are read, constants passed through.
@@ -422,7 +438,7 @@ final class Processor: @unchecked Sendable {
         case 0x0C: // clear_attr
             objectTable.clearAttribute(Int(a), Int(b))
         case 0x0D: // store (indirect)
-            writeVariable(UInt8(a), value: b)
+            indirectWriteVariable(UInt8(a), value: b)
         case 0x0E: // insert_obj
             objectTable.insertObject(Int(a), into: Int(b))
         case 0x0F: // loadw
@@ -587,7 +603,7 @@ final class Processor: @unchecked Sendable {
             } else {
                 let varNum = resolveOperand(inst, 0)
                 let val = currentFrame.stack.popLast() ?? 0
-                writeVariable(UInt8(varNum), value: val)
+                indirectWriteVariable(UInt8(varNum), value: val)
             }
 
         case 0x0A: // split_window
@@ -874,9 +890,9 @@ final class Processor: @unchecked Sendable {
     private func verifyChecksum() -> Bool {
         let expectedChecksum = header.checksum
         var sum: UInt16 = 0
-        let fileLen = min(header.fileLength, memory.size)
+        let fileLen = min(header.fileLength, memory.originalBytes.count)
         for i in 0x40..<fileLen {
-            sum = sum &+ UInt16(memory.readByte(i))
+            sum = sum &+ UInt16(memory.originalBytes[i])
         }
         return sum == expectedChecksum
     }
