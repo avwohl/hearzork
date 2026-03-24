@@ -68,6 +68,17 @@ final class SpeechInput: @unchecked Sendable {
     /// Times out after 10 seconds of no recognition result.
     func listen() async -> String {
         guard isAuthorized, !isListening else { return "" }
+
+        // Check recognizer availability (requires Dictation enabled on macOS)
+        guard speechRecognizer.isAvailable else {
+            #if os(macOS)
+            errorMessage = "Speech not available. Enable Dictation in System Settings → Keyboard → Dictation"
+            #else
+            errorMessage = "Speech recognition not available"
+            #endif
+            return ""
+        }
+
         isListening = true
         partialResult = ""
         errorMessage = nil
@@ -85,6 +96,9 @@ final class SpeechInput: @unchecked Sendable {
                 try? await Task.sleep(for: .seconds(10))
                 guard let self, self.inputContinuation != nil else { return }
                 let result = self.partialResult
+                if result.isEmpty {
+                    self.errorMessage = "No speech detected. Try speaking louder or check microphone."
+                }
                 self.inputContinuation?.resume(returning: result)
                 self.inputContinuation = nil
             }
@@ -99,6 +113,7 @@ final class SpeechInput: @unchecked Sendable {
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
+        request.addsPunctuation = false
         // Don't require on-device recognition — the model may not be downloaded
         // even when supportsOnDeviceRecognition reports true. The system will
         // still prefer on-device when available.
@@ -115,6 +130,14 @@ final class SpeechInput: @unchecked Sendable {
         // Set up audio input
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
+
+        // Validate audio format
+        guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
+            errorMessage = "No audio input device available"
+            inputContinuation?.resume(returning: "")
+            inputContinuation = nil
+            return
+        }
 
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { @Sendable buffer, _ in
             request.append(buffer)
