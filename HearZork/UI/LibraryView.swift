@@ -247,12 +247,33 @@ struct GameScreen: View {
                         }
                     }
                     ToolbarItem(placement: .primaryAction) {
-                        Menu {
-                            fontSizeControls
-                        } label: {
-                            Image(systemName: "textformat.size")
+                        HStack(spacing: 12) {
+                            Button {
+                                Task {
+                                    await vm.setVoiceMode(!vm.voiceMode)
+                                }
+                            } label: {
+                                Image(systemName: vm.voiceMode ? "mic.fill" : "mic.slash")
+                            }
+                            .accessibilityLabel(vm.voiceMode ? "Voice mode on" : "Voice mode off")
+                            .accessibilityHint("Double tap to toggle voice mode")
+
+                            Menu {
+                                fontSizeControls
+                                Divider()
+                                Toggle("Show Console", isOn: Binding(
+                                    get: { vm.showConsole },
+                                    set: { vm.showConsole = $0 }
+                                ))
+                                Toggle("Speech Output", isOn: Binding(
+                                    get: { vm.speechOutput.isEnabled },
+                                    set: { vm.speechOutput.isEnabled = $0 }
+                                ))
+                            } label: {
+                                Image(systemName: "gearshape")
+                            }
+                            .accessibilityLabel("Settings")
                         }
-                        .accessibilityLabel("Text size")
                     }
                 }
         }

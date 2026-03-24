@@ -23,6 +23,12 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     var upperCursorLine: Int = 0
     var upperCursorCol: Int = 0
 
+    // Voice state
+    var voiceMode = false
+    var showConsole = true
+    let speechInput = SpeechInput()
+    let speechOutput = SpeechOutput()
+
     // MARK: - Internal state
 
     private var processor: Processor?
@@ -31,6 +37,7 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     private var currentWindow: Int = 0
     private var pendingText: String = ""
     private var gameTask: Task<Void, Never>?
+    private var lastSpokenOutputCount: Int = 0
 
     struct OutputLine: Identifiable {
         let id = UUID()
@@ -47,16 +54,21 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     func loadGame(from url: URL) throws {
         let data = try Data(contentsOf: url)
         let memory = try Memory(storyData: data)
-        let header = Header(memory)
+        _ = Header(memory)
         gameName = url.deletingPathExtension().lastPathComponent
         outputLines = []
         statusLeft = ""
         statusRight = ""
         upperWindowLines = 0
+        lastSpokenOutputCount = 0
         isRunning = true
 
         let proc = Processor(memory: memory, io: self)
         self.processor = proc
+
+        // Populate voice vocabulary from game dictionary
+        let words = proc.dictionary.allWords(decoder: proc.textDecoder)
+        speechInput.gameVocabulary = words
 
         gameTask = Task { [weak self] in
             await proc.start()
@@ -72,6 +84,8 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         gameTask?.cancel()
         gameTask = nil
         isRunning = false
+        speechInput.stopListening()
+        speechOutput.stop()
         // Resume any waiting continuations
         inputContinuation?.resume(returning: "")
         inputContinuation = nil
@@ -95,6 +109,95 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         isWaitingForChar = false
         charContinuation?.resume(returning: char)
         charContinuation = nil
+    }
+
+    // MARK: - Voice mode
+
+    /// Enable or disable voice mode. Requests authorization on first enable.
+    func setVoiceMode(_ enabled: Bool) async {
+        if enabled && !speechInput.isAuthorized {
+            let authorized = await speechInput.requestAuthorization()
+            guard authorized else { return }
+        }
+        voiceMode = enabled
+    }
+
+    /// Start voice listening and submit the result as game input.
+    func listenForInput() async {
+        guard voiceMode, isWaitingForInput else { return }
+        let raw = await speechInput.listen()
+        guard !raw.isEmpty else { return }
+        let corrected = speechInput.correctWithVocabulary(raw)
+        // Check for meta voice commands
+        if handleMetaCommand(corrected) { return }
+        submitInput(corrected)
+    }
+
+    /// Speak new output lines that haven't been spoken yet.
+    func speakNewOutput() async {
+        guard voiceMode, speechOutput.isEnabled else { return }
+        let lines = outputLines
+        guard lines.count > lastSpokenOutputCount else { return }
+        let newLines = lines[lastSpokenOutputCount...]
+        lastSpokenOutputCount = lines.count
+        let text = newLines.map(\.text).joined(separator: " ")
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        await speechOutput.speakAndWait(trimmed)
+    }
+
+    /// Handle meta voice commands (save, restore, repeat, etc.).
+    /// Returns true if the command was handled as a meta command.
+    private func handleMetaCommand(_ text: String) -> Bool {
+        let lower = text.lowercased().trimmingCharacters(in: .whitespaces)
+        switch lower {
+        case "repeat", "say again", "read again":
+            Task {
+                let lines = outputLines
+                let text = lines.suffix(5).map(\.text).joined(separator: " ")
+                await speechOutput.speakAndWait(text)
+                await listenForInput()
+            }
+            return true
+        case "louder", "volume up":
+            speechOutput.volume = min(speechOutput.volume + 0.2, 1.0)
+            Task { await listenForInput() }
+            return true
+        case "quieter", "volume down":
+            speechOutput.volume = max(speechOutput.volume - 0.2, 0.1)
+            Task { await listenForInput() }
+            return true
+        case "faster":
+            speechOutput.increaseRate()
+            Task { await listenForInput() }
+            return true
+        case "slower":
+            speechOutput.decreaseRate()
+            Task { await listenForInput() }
+            return true
+        case "stop talking", "shut up", "silence":
+            speechOutput.stop()
+            Task { await listenForInput() }
+            return true
+        case "show console", "show text":
+            showConsole = true
+            Task { await listenForInput() }
+            return true
+        case "hide console", "hide text":
+            showConsole = false
+            Task { await listenForInput() }
+            return true
+        case "bigger text", "bigger font":
+            fontSize = min(fontSize + 4, 72)
+            Task { await listenForInput() }
+            return true
+        case "smaller text", "smaller font":
+            fontSize = max(fontSize - 4, 12)
+            Task { await listenForInput() }
+            return true
+        default:
+            return false
+        }
     }
 
     // MARK: - IOSystem implementation
@@ -123,6 +226,14 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         await MainActor.run {
             self.flushPendingText()
             self.isWaitingForInput = true
+        }
+        // In voice mode: speak new output then listen
+        let isVoice = await MainActor.run { self.voiceMode }
+        if isVoice {
+            Task { @MainActor in
+                await self.speakNewOutput()
+                await self.listenForInput()
+            }
         }
         return await withCheckedContinuation { continuation in
             Task { @MainActor in

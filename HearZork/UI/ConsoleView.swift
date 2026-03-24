@@ -14,38 +14,47 @@ struct ConsoleView: View {
             }
 
             // Upper window (if split)
-            if vm.upperWindowLines > 0 {
+            if vm.upperWindowLines > 0 && vm.showConsole {
                 upperWindow
             }
 
-            // Main scrollable text output
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(vm.outputLines) { line in
-                            Text(line.text)
-                                .font(.system(size: vm.fontSize, design: .monospaced))
-                                .foregroundStyle(.primary)
-                                .textSelection(.enabled)
-                                .id(line.id)
+            if vm.showConsole {
+                // Main scrollable text output
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(vm.outputLines) { line in
+                                Text(line.text)
+                                    .font(.system(size: vm.fontSize, design: .monospaced))
+                                    .foregroundStyle(.primary)
+                                    .textSelection(.enabled)
+                                    .id(line.id)
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .onChange(of: vm.outputLines.count) {
+                        if let last = vm.outputLines.last {
+                            withAnimation(.easeOut(duration: 0.1)) {
+                                proxy.scrollTo(last.id, anchor: .bottom)
+                            }
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .onChange(of: vm.outputLines.count) {
-                    if let last = vm.outputLines.last {
-                        withAnimation(.easeOut(duration: 0.1)) {
-                            proxy.scrollTo(last.id, anchor: .bottom)
-                        }
-                    }
-                }
+            } else {
+                // Voice-only mode: show listening indicator
+                Spacer()
+                voiceOnlyIndicator
+                Spacer()
             }
 
             // Input area
-            if vm.isWaitingForInput {
+            if vm.isWaitingForInput && vm.showConsole && !vm.voiceMode {
                 inputBar
+            } else if vm.isWaitingForInput && vm.voiceMode {
+                voiceInputBar
             } else if vm.isWaitingForChar {
                 charPrompt
             }
@@ -118,6 +127,58 @@ struct ConsoleView: View {
         .onAppear {
             inputFocused = true
         }
+    }
+
+    private var voiceOnlyIndicator: some View {
+        VStack(spacing: 16) {
+            Image(systemName: vm.speechInput.isListening ? "waveform.circle.fill" : "mic.circle")
+                .font(.system(size: 64))
+                .foregroundStyle(vm.speechInput.isListening ? .green : .secondary)
+                .accessibilityHidden(true)
+            if vm.speechInput.isListening {
+                Text(vm.speechInput.partialResult.isEmpty ? "Listening..." : vm.speechInput.partialResult)
+                    .font(.system(size: vm.fontSize, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            } else if vm.speechOutput.isSpeaking {
+                Text("Speaking...")
+                    .font(.system(size: vm.fontSize, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Voice Mode")
+                    .font(.system(size: vm.fontSize, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+        .accessibilityLabel(vm.speechInput.isListening ? "Listening for your command" : "Voice mode active")
+    }
+
+    private var voiceInputBar: some View {
+        HStack(spacing: 8) {
+            Image(systemName: vm.speechInput.isListening ? "waveform" : "mic")
+                .foregroundStyle(vm.speechInput.isListening ? .green : .secondary)
+                .accessibilityHidden(true)
+            if vm.speechInput.isListening {
+                Text(vm.speechInput.partialResult.isEmpty ? "Listening..." : vm.speechInput.partialResult)
+                    .font(.system(size: vm.fontSize, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else {
+                Text("Tap to speak")
+                    .font(.system(size: vm.fontSize, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(platformSecondaryBackground)
+        .onTapGesture {
+            Task { await vm.listenForInput() }
+        }
+        .accessibilityLabel(vm.speechInput.isListening ? "Listening" : "Tap to speak a command")
+        .accessibilityAddTraits(.isButton)
     }
 
     private var charPrompt: some View {

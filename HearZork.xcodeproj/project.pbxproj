@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0129AFE93FCB9083B35ED559 /* SpeechOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */; };
+		05D647A5BE3FC050CDE2995A /* SpeechOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */; };
 		0D176F7D0A09185D9AA2D2B2 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
 		219274B14B8758399B975EAE /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		24B532DBF117868E15444F46 /* IOSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17152953C9D4752C85437CF0 /* IOSystem.swift */; };
@@ -18,11 +20,13 @@
 		85F316B98A8629A196AD1AC1 /* MemoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9460AD14980414F9A3F61CC /* MemoryTests.swift */; };
 		8FA3000DC3FE478D78E52641 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
 		9A8533BEA13B2CC114726078 /* HearZorkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */; };
+		A1F0B119919C29644493DB36 /* SpeechInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B198930E69914E12FFD5D1 /* SpeechInput.swift */; };
 		A3F44ED59D2C439C9CF9743F /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		B68DBF948C76556F2236B91A /* ObjectTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */; };
 		B8769D73357DEB4CF9A39EFE /* TextEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */; };
 		B8C62182AA02D165D57C68FB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
 		C085D70EC9A5DD5D81927BDB /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C683883B7BB42645F30A8CA /* Memory.swift */; };
+		C2E635055E807D49E1764237 /* SpeechInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B198930E69914E12FFD5D1 /* SpeechInput.swift */; };
 		C482BE0EBE2A3A66533D35B0 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426F82944FDF8D46A16E618C /* Header.swift */; };
 		C5AFF3732133811EA75BDDDE /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */; };
 		CEDB282D12B3650C941628EB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
@@ -50,10 +54,12 @@
 		0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEncoderTests.swift; sourceTree = "<group>"; };
 		12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
 		17152953C9D4752C85437CF0 /* IOSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSystem.swift; sourceTree = "<group>"; };
+		19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechOutput.swift; sourceTree = "<group>"; };
 		1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HearZorkApp.swift; sourceTree = "<group>"; };
 		325635E6AC606413D71BBA28 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		3BADD5749040DD5F33BE5667 /* HearZorkTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HearZorkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		426F82944FDF8D46A16E618C /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
+		51B198930E69914E12FFD5D1 /* SpeechInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechInput.swift; sourceTree = "<group>"; };
 		6D4384E81873394A514CBE95 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		7C683883B7BB42645F30A8CA /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		A2D6FC807357422C83B886EF /* HearZork_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearZork_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,12 +100,22 @@
 			path = ZMachine;
 			sourceTree = "<group>";
 		};
+		6C5A99F5A3329E8A1E19B0E2 /* Voice */ = {
+			isa = PBXGroup;
+			children = (
+				51B198930E69914E12FFD5D1 /* SpeechInput.swift */,
+				19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */,
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
 		71B3B400035A71D7720B1EBE /* HearZork */ = {
 			isa = PBXGroup;
 			children = (
 				EA550BC999A319320DC51D8E /* HearZork.entitlements */,
 				C672F3D26D625603A8B9C15B /* App */,
 				0735B487A1134AD266CA76F0 /* UI */,
+				6C5A99F5A3329E8A1E19B0E2 /* Voice */,
 				28A4675161A56FF95D01A730 /* ZMachine */,
 			);
 			path = HearZork;
@@ -261,6 +277,8 @@
 				C085D70EC9A5DD5D81927BDB /* Memory.swift in Sources */,
 				F0A95133D37C57E32E9DD3EC /* ObjectTable.swift in Sources */,
 				0D176F7D0A09185D9AA2D2B2 /* Processor.swift in Sources */,
+				A1F0B119919C29644493DB36 /* SpeechInput.swift in Sources */,
+				0129AFE93FCB9083B35ED559 /* SpeechOutput.swift in Sources */,
 				52E376F5C9C0E76A12AA79CE /* TextDecoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -280,6 +298,8 @@
 				448D40044138E7E14E4F54E9 /* Memory.swift in Sources */,
 				B68DBF948C76556F2236B91A /* ObjectTable.swift in Sources */,
 				8FA3000DC3FE478D78E52641 /* Processor.swift in Sources */,
+				C2E635055E807D49E1764237 /* SpeechInput.swift in Sources */,
+				05D647A5BE3FC050CDE2995A /* SpeechOutput.swift in Sources */,
 				485E78C48FBD12402FEAA65B /* TextDecoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
