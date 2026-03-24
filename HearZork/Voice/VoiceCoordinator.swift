@@ -2,7 +2,6 @@ import SwiftUI
 import AVFoundation
 
 /// App-level voice coordinator shared between library and game screens.
-/// Persists voice mode preference and provides speech input/output for library navigation.
 ///
 /// Ensures TTS and mic never overlap — the mic picks up speaker output on macOS
 /// (no echo cancellation like iOS AVAudioSession provides).
@@ -48,11 +47,10 @@ final class VoiceCoordinator: @unchecked Sendable {
     /// Speak text and wait for completion. Stops any active listening first.
     func speak(_ text: String) async {
         guard voiceEnabled else { return }
-        // Stop listening so the mic doesn't pick up TTS output
         speechInput.stopListening()
         await speechOutput.speakAndWait(text)
-        // Brief pause for echo/reverb to fade before mic reopens
-        try? await Task.sleep(for: .milliseconds(300))
+        // Brief pause for echo/reverb to fade — use GCD, not Task.sleep
+        await delayMs(300)
     }
 
     /// Speak text without waiting.
@@ -66,10 +64,9 @@ final class VoiceCoordinator: @unchecked Sendable {
     /// Ensures TTS is stopped first to avoid hearing our own output.
     func listen() async -> String {
         guard voiceEnabled, isAuthorized else { return "" }
-        // Make sure TTS is done before opening the mic
         if speechOutput.isSpeaking {
             speechOutput.stop()
-            try? await Task.sleep(for: .milliseconds(300))
+            await delayMs(300)
         }
         isListening = true
         let result = await speechInput.listen()
@@ -80,5 +77,14 @@ final class VoiceCoordinator: @unchecked Sendable {
     /// Stop any current speech.
     func stopSpeaking() {
         speechOutput.stop()
+    }
+
+    /// Delay using GCD instead of Task.sleep (which stalls on MainActor).
+    private func delayMs(_ ms: Int) async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(ms)) {
+                continuation.resume()
+            }
+        }
     }
 }

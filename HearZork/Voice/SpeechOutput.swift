@@ -6,8 +6,10 @@ import AVFoundation
 @Observable
 final class SpeechOutput: NSObject, @unchecked Sendable {
     private let synthesizer = AVSpeechSynthesizer()
-    private var utteranceQueue: [String] = []
-    private var speakingContinuation: CheckedContinuation<Void, Never>?
+
+    /// Thread-safe continuation for speakAndWait.
+    private let continuationLock = NSLock()
+    @ObservationIgnored nonisolated(unsafe) private var _speakContinuation: CheckedContinuation<Void, Never>?
 
     var isSpeaking: Bool { synthesizer.isSpeaking }
     var rate: Float = AVSpeechUtteranceDefaultSpeechRate
@@ -45,16 +47,26 @@ final class SpeechOutput: NSObject, @unchecked Sendable {
         speak(text)
         if synthesizer.isSpeaking {
             await withCheckedContinuation { continuation in
-                speakingContinuation = continuation
+                continuationLock.lock()
+                _speakContinuation = continuation
+                continuationLock.unlock()
             }
         }
+    }
+
+    /// Resume the speak continuation from any thread (delegate callback).
+    private nonisolated func completeSpeaking() {
+        continuationLock.lock()
+        let cont = _speakContinuation
+        _speakContinuation = nil
+        continuationLock.unlock()
+        cont?.resume()
     }
 
     /// Stop speaking immediately.
     func stop() {
         synthesizer.stopSpeaking(at: .immediate)
-        speakingContinuation?.resume()
-        speakingContinuation = nil
+        completeSpeaking()
     }
 
     /// Pause speaking.
@@ -78,13 +90,10 @@ final class SpeechOutput: NSObject, @unchecked Sendable {
     /// Clean up game text for better speech output.
     private func cleanForSpeech(_ text: String) -> String {
         var result = text
-        // Remove multiple spaces
         while result.contains("  ") {
             result = result.replacingOccurrences(of: "  ", with: " ")
         }
-        // Remove leading/trailing whitespace
         result = result.trimmingCharacters(in: .whitespacesAndNewlines)
-        // Replace common IF punctuation patterns
         result = result.replacingOccurrences(of: ">", with: "")
         return result
     }
@@ -100,17 +109,11 @@ final class SpeechOutput: NSObject, @unchecked Sendable {
 extension SpeechOutput: AVSpeechSynthesizerDelegate {
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
                                        didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor in
-            self.speakingContinuation?.resume()
-            self.speakingContinuation = nil
-        }
+        completeSpeaking()
     }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
                                        didCancel utterance: AVSpeechUtterance) {
-        Task { @MainActor in
-            self.speakingContinuation?.resume()
-            self.speakingContinuation = nil
-        }
+        completeSpeaking()
     }
 }

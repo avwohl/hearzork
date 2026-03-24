@@ -139,7 +139,7 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         if speechOutput.isSpeaking {
             speechOutput.stop()
         }
-        try? await Task.sleep(for: .milliseconds(300))
+        await delayMs(300)
         let raw = await speechInput.listen()
         guard !raw.isEmpty else { return }
         let corrected = speechInput.correctWithVocabulary(raw)
@@ -162,7 +162,7 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         speechInput.stopListening()
         await speechOutput.speakAndWait(trimmed)
         // Pause for echo to fade before mic reopens
-        try? await Task.sleep(for: .milliseconds(300))
+        await delayMs(300)
     }
 
     /// Handle meta voice commands (save, restore, repeat, etc.).
@@ -402,5 +402,14 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     func dictionaryWords() -> [String] {
         guard let proc = processor else { return [] }
         return proc.dictionary.allWords(decoder: proc.textDecoder)
+    }
+
+    /// Delay using GCD instead of Task.sleep (which stalls on MainActor).
+    private func delayMs(_ ms: Int) async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(ms)) {
+                continuation.resume()
+            }
+        }
     }
 }
