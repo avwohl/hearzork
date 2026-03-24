@@ -26,8 +26,9 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     // Voice state
     var voiceMode = false
     var showConsole = true
-    let speechInput = SpeechInput()
-    let speechOutput = SpeechOutput()
+    var speechInput = SpeechInput()
+    var speechOutput = SpeechOutput()
+    private var voiceCoordinator: VoiceCoordinator?
 
     // MARK: - Internal state
 
@@ -86,6 +87,7 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         isRunning = false
         speechInput.stopListening()
         speechOutput.stop()
+        voiceMode = false
         // Resume any waiting continuations
         inputContinuation?.resume(returning: "")
         inputContinuation = nil
@@ -114,12 +116,20 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     // MARK: - Voice mode
 
     /// Enable or disable voice mode. Requests authorization on first enable.
-    func setVoiceMode(_ enabled: Bool) async {
+    /// When a coordinator is provided, shares its speech engines so voice
+    /// persists seamlessly between library and game.
+    func setVoiceMode(_ enabled: Bool, coordinator: VoiceCoordinator? = nil) async {
+        if let coord = coordinator {
+            voiceCoordinator = coord
+            speechInput = coord.speechInput
+            speechOutput = coord.speechOutput
+        }
         if enabled && !speechInput.isAuthorized {
             let authorized = await speechInput.requestAuthorization()
             guard authorized else { return }
         }
         voiceMode = enabled
+        voiceCoordinator?.voiceEnabled = enabled
     }
 
     /// Start voice listening and submit the result as game input.

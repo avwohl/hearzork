@@ -10,6 +10,7 @@
 		0129AFE93FCB9083B35ED559 /* SpeechOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */; };
 		05D647A5BE3FC050CDE2995A /* SpeechOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */; };
 		0D176F7D0A09185D9AA2D2B2 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
+		14C9A38D3FC36E977B33558B /* VoiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D369F2B0B74A180C449B0EA /* VoiceCoordinator.swift */; };
 		219274B14B8758399B975EAE /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		24B532DBF117868E15444F46 /* IOSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17152953C9D4752C85437CF0 /* IOSystem.swift */; };
 		2BA46E9A89991A610023A07F /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798A71716B86B0BD8AC376F0 /* AboutView.swift */; };
@@ -25,6 +26,7 @@
 		6FFF21670607C7AAB3218E4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9344C14E8EB6297C8F921371 /* Assets.xcassets */; };
 		814B0C01F0AA1BA11837EA4E /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C583494A083DF2E02B576403 /* GameCatalog.swift */; };
 		835FF9A45272B076C74C1485 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426F82944FDF8D46A16E618C /* Header.swift */; };
+		85EC3DD616A408FDF305BEB6 /* VoiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D369F2B0B74A180C449B0EA /* VoiceCoordinator.swift */; };
 		85F316B98A8629A196AD1AC1 /* MemoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9460AD14980414F9A3F61CC /* MemoryTests.swift */; };
 		8FA3000DC3FE478D78E52641 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
 		9A8533BEA13B2CC114726078 /* HearZorkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */; };
@@ -78,6 +80,7 @@
 		6D4384E81873394A514CBE95 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		798A71716B86B0BD8AC376F0 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		7C683883B7BB42645F30A8CA /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		8D369F2B0B74A180C449B0EA /* VoiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCoordinator.swift; sourceTree = "<group>"; };
 		9344C14E8EB6297C8F921371 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2D6FC807357422C83B886EF /* HearZork_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearZork_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF74A9DBE9AAEAF51F4A06A /* TextDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDecoder.swift; sourceTree = "<group>"; };
@@ -124,6 +127,7 @@
 			children = (
 				51B198930E69914E12FFD5D1 /* SpeechInput.swift */,
 				19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */,
+				8D369F2B0B74A180C449B0EA /* VoiceCoordinator.swift */,
 			);
 			path = Voice;
 			sourceTree = "<group>";
@@ -347,6 +351,7 @@
 				A1F0B119919C29644493DB36 /* SpeechInput.swift in Sources */,
 				0129AFE93FCB9083B35ED559 /* SpeechOutput.swift in Sources */,
 				52E376F5C9C0E76A12AA79CE /* TextDecoder.swift in Sources */,
+				14C9A38D3FC36E977B33558B /* VoiceCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,6 +377,7 @@
 				C2E635055E807D49E1764237 /* SpeechInput.swift in Sources */,
 				05D647A5BE3FC050CDE2995A /* SpeechOutput.swift in Sources */,
 				485E78C48FBD12402FEAA65B /* TextDecoder.swift in Sources */,
+				85EC3DD616A408FDF305BEB6 /* VoiceCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

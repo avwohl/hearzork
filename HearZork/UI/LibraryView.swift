@@ -2,7 +2,10 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// Game library: browse catalog, manage downloaded games, import files.
+/// Supports full voice navigation for visually impaired users.
 struct LibraryView: View {
+    var voice: VoiceCoordinator
+
     @State private var localGames: [GameFile] = []
     @State private var catalogGames: [CatalogGame] = []
     @State private var showFilePicker = false
@@ -10,10 +13,11 @@ struct LibraryView: View {
     @State private var showAbout = false
     @State private var urlText = ""
     @State private var selectedGame: GameFile?
-    @State private var activeVM: GameViewModel?
+    @State private var launchWithVoice = false
     @State private var errorMessage: String?
     @State private var downloader = GameDownloader()
     @State private var selectedTab = 0
+    @State private var voiceListenTask: Task<Void, Never>?
 
     var body: some View {
         NavigationStack {
@@ -57,6 +61,7 @@ struct LibraryView: View {
             }
             #endif
             .task { await loadAll() }
+            .onDisappear { voiceListenTask?.cancel() }
         }
     }
 
@@ -314,21 +319,31 @@ struct LibraryView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
-            Menu {
-                Button("Import File", systemImage: "doc.badge.plus") {
-                    showFilePicker = true
+            HStack(spacing: 12) {
+                Button {
+                    Task { await toggleVoice() }
+                } label: {
+                    Image(systemName: voice.voiceEnabled ? "mic.fill" : "mic.slash")
                 }
-                Button("Load from URL", systemImage: "link") {
-                    showURLInput = true
+                .accessibilityLabel(voice.voiceEnabled ? "Voice mode on" : "Voice mode off")
+                .accessibilityHint("Double tap to toggle voice navigation")
+
+                Menu {
+                    Button("Import File", systemImage: "doc.badge.plus") {
+                        showFilePicker = true
+                    }
+                    Button("Load from URL", systemImage: "link") {
+                        showURLInput = true
+                    }
+                    Divider()
+                    Button("About HearZork", systemImage: "info.circle") {
+                        showAbout = true
+                    }
+                } label: {
+                    Image(systemName: "plus")
                 }
-                Divider()
-                Button("About HearZork", systemImage: "info.circle") {
-                    showAbout = true
-                }
-            } label: {
-                Image(systemName: "plus")
+                .accessibilityLabel("Add game or view info")
             }
-            .accessibilityLabel("Add game or view info")
         }
     }
 
@@ -337,17 +352,220 @@ struct LibraryView: View {
     @ViewBuilder
     private func gameScreen(for game: GameFile) -> some View {
         let vm = GameViewModel()
-        GameScreen(vm: vm, game: game) {
+        GameScreen(vm: vm, game: game, voice: voice) {
             selectedGame = nil
+            launchWithVoice = false
+            // Restart voice listening in library if voice is still on
+            if voice.voiceEnabled {
+                startVoiceLoop()
+            }
         }
         .onAppear {
             do {
                 try vm.loadGame(from: game.url)
+                // If launched via voice or voice is enabled, auto-enable voice in game
+                if voice.voiceEnabled {
+                    Task { await vm.setVoiceMode(true, coordinator: voice) }
+                }
             } catch {
                 errorMessage = "Failed to load game: \(error.localizedDescription)"
                 selectedGame = nil
             }
         }
+    }
+
+    // MARK: - Voice navigation
+
+    private func toggleVoice() async {
+        if voice.voiceEnabled {
+            voice.disableVoice()
+            voiceListenTask?.cancel()
+            voiceListenTask = nil
+        } else {
+            let ok = await voice.enableVoice()
+            if ok {
+                startVoiceLoop()
+            }
+        }
+    }
+
+    private func startVoiceLoop() {
+        voiceListenTask?.cancel()
+        voiceListenTask = Task {
+            // Welcome announcement
+            await announceLibrary()
+            // Voice command loop
+            while !Task.isCancelled && voice.voiceEnabled {
+                let command = await voice.listen()
+                guard !Task.isCancelled, !command.isEmpty else { continue }
+                await handleVoiceCommand(command)
+            }
+        }
+    }
+
+    private func announceLibrary() async {
+        let downloadedCount = localGames.count
+        let catalogCount = catalogGames.count
+
+        var greeting = "Welcome to HearZork."
+        if downloadedCount > 0 {
+            greeting += " You have \(downloadedCount) game\(downloadedCount == 1 ? "" : "s") ready to play."
+        }
+        if catalogCount > 0 {
+            greeting += " \(catalogCount) games available to browse."
+        }
+        greeting += " Say the name of a game to play it, or say help for commands."
+        await voice.speak(greeting)
+    }
+
+    private func handleVoiceCommand(_ command: String) async {
+        let lower = command.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Help
+        if lower == "help" || lower == "commands" {
+            await voice.speak(
+                "Say the name of a game to play it. " +
+                "Say download and a game name to download it. " +
+                "Say list games to hear your downloaded games. " +
+                "Say browse to hear the catalog. " +
+                "Say voice off to disable voice mode."
+            )
+            return
+        }
+
+        // Voice off
+        if lower == "voice off" || lower == "stop voice" || lower == "disable voice" {
+            voice.disableVoice()
+            voiceListenTask?.cancel()
+            voiceListenTask = nil
+            return
+        }
+
+        // List my games
+        if lower == "list games" || lower == "my games" || lower == "list" {
+            selectedTab = 1
+            if localGames.isEmpty {
+                await voice.speak("You don't have any downloaded games yet. Say browse to hear available games.")
+            } else {
+                let names = localGames.map(\.displayName).joined(separator: ". ")
+                await voice.speak("Your games: \(names). Say a game name to play it.")
+            }
+            return
+        }
+
+        // Browse catalog
+        if lower == "browse" || lower == "browse games" || lower == "catalog" || lower == "browse catalog" {
+            selectedTab = 0
+            if catalogGames.isEmpty {
+                await voice.speak("The catalog is still loading. Please try again in a moment.")
+            } else {
+                await readCatalog()
+            }
+            return
+        }
+
+        // Download command
+        if lower.hasPrefix("download ") {
+            let gameName = String(lower.dropFirst("download ".count))
+            await handleDownloadCommand(gameName)
+            return
+        }
+
+        // Try to match as a game name to play
+        if let game = findLocalGame(lower) {
+            await voice.speak("Playing \(game.displayName).")
+            selectedGame = game
+            return
+        }
+
+        // Try matching catalog game that's downloaded
+        if let catGame = findCatalogGame(lower), catGame.isDownloaded {
+            launchCatalogGame(catGame)
+            if selectedGame != nil {
+                await voice.speak("Playing \(catGame.title).")
+                return
+            }
+        }
+
+        // Try matching catalog game that needs download
+        if let catGame = findCatalogGame(lower), !catGame.isDownloaded {
+            await voice.speak("\(catGame.title) is not downloaded yet. Downloading now.")
+            await handleDownloadCommand(lower)
+            return
+        }
+
+        // Didn't understand
+        await voice.speak("I didn't understand \(command). Say help for available commands.")
+    }
+
+    private func readCatalog() async {
+        let classics = catalogGames.filter { $0.category == "classic" }
+        let community = catalogGames.filter { $0.category == "community" }
+
+        if !classics.isEmpty {
+            let names = classics.map { "\($0.title) by \($0.author)" }.joined(separator: ". ")
+            await voice.speak("Classics: \(names).")
+        }
+        if !community.isEmpty {
+            let names = community.map { "\($0.title) by \($0.author)" }.joined(separator: ". ")
+            await voice.speak("Community favorites: \(names).")
+        }
+        await voice.speak("Say download and a game name to download, or say a game name to play.")
+    }
+
+    private func handleDownloadCommand(_ gameName: String) async {
+        guard let catGame = findCatalogGame(gameName) else {
+            await voice.speak("I couldn't find a game matching \(gameName). Say browse to hear available games.")
+            return
+        }
+
+        if catGame.isDownloaded {
+            await voice.speak("\(catGame.title) is already downloaded. Say \(catGame.title) to play it.")
+            return
+        }
+
+        await voice.speak("Downloading \(catGame.title).")
+        let ok = await downloader.download(catGame)
+        if ok {
+            loadLocalGames()
+            await voice.speak("\(catGame.title) downloaded. Say \(catGame.title) to play it.")
+        } else {
+            await voice.speak("Download failed. \(downloader.errorMessage ?? "Please try again.")")
+        }
+    }
+
+    private func findLocalGame(_ name: String) -> GameFile? {
+        let lower = name.lowercased()
+        // Exact match
+        if let game = localGames.first(where: { $0.displayName.lowercased() == lower }) {
+            return game
+        }
+        // Contains match
+        if let game = localGames.first(where: { $0.displayName.lowercased().contains(lower) }) {
+            return game
+        }
+        // Name contained in query
+        if let game = localGames.first(where: { lower.contains($0.displayName.lowercased()) }) {
+            return game
+        }
+        return nil
+    }
+
+    private func findCatalogGame(_ name: String) -> CatalogGame? {
+        let lower = name.lowercased()
+        // Exact title match
+        if let game = catalogGames.first(where: { $0.title.lowercased() == lower }) {
+            return game
+        }
+        // Title contained in query
+        if let game = catalogGames.first(where: { lower.contains($0.title.lowercased()) }) {
+            return game
+        }
+        // Query contained in title
+        if let game = catalogGames.first(where: { $0.title.lowercased().contains(lower) }) {
+            return game
+        }
+        return nil
     }
 
     // MARK: - Actions
@@ -356,12 +574,18 @@ struct LibraryView: View {
         loadLocalGames()
         let catalog = GameCatalog()
         catalogGames = await catalog.fetch()
-        // Also try loading bundled catalog as fallback
         if catalogGames.isEmpty {
             let localPath = Bundle.main.path(forResource: "games", ofType: "xml")
                 ?? "/Users/wohl/src/hearzork/games.xml"
             if let data = try? Data(contentsOf: URL(fileURLWithPath: localPath)) {
                 catalogGames = catalog.parse(data: data)
+            }
+        }
+        // Auto-start voice: request authorization and begin listening
+        if voice.voiceEnabled {
+            let ok = await voice.enableVoice()
+            if ok {
+                startVoiceLoop()
             }
         }
     }
@@ -375,10 +599,11 @@ struct LibraryView: View {
 
     private func launchCatalogGame(_ game: CatalogGame) {
         if let local = localGames.first(where: { $0.url.lastPathComponent == game.filename }) {
+            voiceListenTask?.cancel()
             selectedGame = local
         } else {
-            // Try to parse and launch directly
             if let parsed = parseGameFile(game.localURL) {
+                voiceListenTask?.cancel()
                 selectedGame = parsed
             }
         }
@@ -464,6 +689,7 @@ struct GameFile: Identifiable {
 struct GameScreen: View {
     let vm: GameViewModel
     let game: GameFile
+    var voice: VoiceCoordinator
     let onDismiss: () -> Void
 
     var body: some View {
@@ -484,7 +710,7 @@ struct GameScreen: View {
                         HStack(spacing: 12) {
                             Button {
                                 Task {
-                                    await vm.setVoiceMode(!vm.voiceMode)
+                                    await vm.setVoiceMode(!vm.voiceMode, coordinator: voice)
                                 }
                             } label: {
                                 Image(systemName: vm.voiceMode ? "mic.fill" : "mic.slash")
