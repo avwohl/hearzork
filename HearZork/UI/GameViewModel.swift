@@ -135,6 +135,11 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     /// Start voice listening and submit the result as game input.
     func listenForInput() async {
         guard voiceMode, isWaitingForInput else { return }
+        // Ensure TTS is done before opening mic (avoid hearing ourselves)
+        if speechOutput.isSpeaking {
+            speechOutput.stop()
+        }
+        try? await Task.sleep(for: .milliseconds(300))
         let raw = await speechInput.listen()
         guard !raw.isEmpty else { return }
         let corrected = speechInput.correctWithVocabulary(raw)
@@ -144,6 +149,7 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     }
 
     /// Speak new output lines that haven't been spoken yet.
+    /// Stops mic input during speech to prevent echo on macOS.
     func speakNewOutput() async {
         guard voiceMode, speechOutput.isEnabled else { return }
         let lines = outputLines
@@ -153,7 +159,10 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         let text = newLines.map(\.text).joined(separator: " ")
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        speechInput.stopListening()
         await speechOutput.speakAndWait(trimmed)
+        // Pause for echo to fade before mic reopens
+        try? await Task.sleep(for: .milliseconds(300))
     }
 
     /// Handle meta voice commands (save, restore, repeat, etc.).
