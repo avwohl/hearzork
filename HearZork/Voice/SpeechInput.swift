@@ -89,13 +89,9 @@ final class SpeechInput: @unchecked Sendable {
             stopListening()
         }
 
-        return await withCheckedContinuation { continuation in
-            inputContinuation = continuation
-            startRecognition()
-
-            // Timeout: if no result after 10 seconds, stop and return what we have
+        // Schedule timeout on the run loop (not Task.sleep, which can stall)
+        let timeoutWork = DispatchWorkItem { [weak self] in
             Task { @MainActor [weak self] in
-                try? await Task.sleep(for: .seconds(10))
                 guard let self, self.inputContinuation != nil else { return }
                 let result = self.partialResult
                 if result.isEmpty {
@@ -107,6 +103,15 @@ final class SpeechInput: @unchecked Sendable {
                 self.inputContinuation = nil
             }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: timeoutWork)
+
+        let result = await withCheckedContinuation { continuation in
+            inputContinuation = continuation
+            startRecognition()
+        }
+
+        timeoutWork.cancel()
+        return result
     }
 
     /// Start the recognition pipeline.
