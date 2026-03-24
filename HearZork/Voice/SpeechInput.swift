@@ -14,6 +14,7 @@ final class SpeechInput: @unchecked Sendable {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private var inputContinuation: CheckedContinuation<String, Never>?
+    private var bufferCount = 0
 
     var isListening = false
     var isAuthorized = false
@@ -69,7 +70,7 @@ final class SpeechInput: @unchecked Sendable {
     func listen() async -> String {
         guard isAuthorized, !isListening else { return "" }
 
-        // Check recognizer availability (requires Dictation enabled on macOS)
+        // Check recognizer availability
         guard speechRecognizer.isAvailable else {
             #if os(macOS)
             errorMessage = "Speech not available. Enable Dictation in System Settings → Keyboard → Dictation"
@@ -82,6 +83,7 @@ final class SpeechInput: @unchecked Sendable {
         isListening = true
         partialResult = ""
         errorMessage = nil
+        bufferCount = 0
 
         defer {
             stopListening()
@@ -97,7 +99,9 @@ final class SpeechInput: @unchecked Sendable {
                 guard let self, self.inputContinuation != nil else { return }
                 let result = self.partialResult
                 if result.isEmpty {
-                    self.errorMessage = "No speech detected. Try speaking louder or check microphone."
+                    let fmt = self.audioEngine.inputNode.outputFormat(forBus: 0)
+                    let taskState = self.recognitionTask.map { "\($0.state.rawValue)" } ?? "nil"
+                    self.errorMessage = "No speech detected (bufs:\(self.bufferCount) fmt:\(Int(fmt.sampleRate))Hz/\(fmt.channelCount)ch task:\(taskState))"
                 }
                 self.inputContinuation?.resume(returning: result)
                 self.inputContinuation = nil
@@ -115,13 +119,11 @@ final class SpeechInput: @unchecked Sendable {
         request.shouldReportPartialResults = true
         request.addsPunctuation = false
         // Don't require on-device recognition — the model may not be downloaded
-        // even when supportsOnDeviceRecognition reports true. The system will
-        // still prefer on-device when available.
+        // even when supportsOnDeviceRecognition reports true.
         request.requiresOnDeviceRecognition = false
 
         // Set contextual strings from game vocabulary
         if !gameVocabulary.isEmpty {
-            // contextualStrings works best with ~100 items, prioritize unusual words
             request.contextualStrings = Array(gameVocabulary.prefix(100))
         }
 
@@ -139,8 +141,11 @@ final class SpeechInput: @unchecked Sendable {
             return
         }
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { @Sendable buffer, _ in
+        inputNode.installTap(onBus: 0, bufferSize: 4096, format: recordingFormat) { @Sendable [weak self] buffer, _ in
             request.append(buffer)
+            Task { @MainActor [weak self] in
+                self?.bufferCount += 1
+            }
         }
 
         do {
@@ -155,7 +160,6 @@ final class SpeechInput: @unchecked Sendable {
 
         // Start recognition
         recognitionTask = speechRecognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
-            // Extract values before crossing isolation boundary
             let transcription = result?.bestTranscription.formattedString
             let isFinal = result?.isFinal ?? false
             let errorDesc = error?.localizedDescription
@@ -174,7 +178,6 @@ final class SpeechInput: @unchecked Sendable {
                 }
 
                 if nsError != nil {
-                    // Don't report cancellation as an error
                     if nsError?.domain != "kAFAssistantErrorDomain" || nsError?.code != 216 {
                         self.errorMessage = errorDesc
                     }
@@ -183,8 +186,6 @@ final class SpeechInput: @unchecked Sendable {
                 }
             }
         }
-
-        // Auto-stop after silence (recognizer handles this via isFinal)
     }
 
     /// Stop listening and clean up audio resources.
@@ -209,12 +210,11 @@ final class SpeechInput: @unchecked Sendable {
         let corrected = words.map { word -> String in
             if vocabSet.contains(word) { return word }
 
-            // Find closest match by edit distance
             var bestMatch = word
             var bestDistance = Int.max
             for vocabWord in gameVocabulary {
                 let dist = editDistance(word, vocabWord.lowercased())
-                if dist < bestDistance && dist <= 2 { // max 2 edits
+                if dist < bestDistance && dist <= 2 {
                     bestDistance = dist
                     bestMatch = vocabWord.lowercased()
                 }
