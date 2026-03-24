@@ -65,6 +65,7 @@ final class SpeechInput: @unchecked Sendable {
     }
 
     /// Listen for a single spoken command and return it as text.
+    /// Times out after 10 seconds of no recognition result.
     func listen() async -> String {
         guard isAuthorized, !isListening else { return "" }
         isListening = true
@@ -78,6 +79,15 @@ final class SpeechInput: @unchecked Sendable {
         return await withCheckedContinuation { continuation in
             inputContinuation = continuation
             startRecognition()
+
+            // Timeout: if no result after 10 seconds, stop and return what we have
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(for: .seconds(10))
+                guard let self, self.inputContinuation != nil else { return }
+                let result = self.partialResult
+                self.inputContinuation?.resume(returning: result)
+                self.inputContinuation = nil
+            }
         }
     }
 
@@ -89,7 +99,10 @@ final class SpeechInput: @unchecked Sendable {
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
-        request.requiresOnDeviceRecognition = speechRecognizer.supportsOnDeviceRecognition
+        // Don't require on-device recognition — the model may not be downloaded
+        // even when supportsOnDeviceRecognition reports true. The system will
+        // still prefer on-device when available.
+        request.requiresOnDeviceRecognition = false
 
         // Set contextual strings from game vocabulary
         if !gameVocabulary.isEmpty {

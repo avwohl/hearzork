@@ -388,7 +388,12 @@ struct LibraryView: View {
                 .foregroundStyle(voice.isListening ? .green : (voice.speechOutput.isSpeaking ? .blue : .secondary))
                 .symbolEffect(.pulse, isActive: voice.isListening)
 
-            if voice.isListening {
+            if let err = voice.speechInput.errorMessage {
+                Text(err)
+                    .font(.subheadline)
+                    .foregroundStyle(.red)
+                    .lineLimit(2)
+            } else if voice.isListening {
                 Text(voice.speechInput.partialResult.isEmpty ? "Listening — speak a command..." : voice.speechInput.partialResult)
                     .font(.subheadline)
                     .foregroundStyle(.primary)
