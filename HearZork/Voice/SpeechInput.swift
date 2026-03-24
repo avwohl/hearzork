@@ -13,7 +13,9 @@ final class SpeechInput: @unchecked Sendable {
     private let audioEngine = AVAudioEngine()
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
-    private var inputContinuation: CheckedContinuation<String, Never>?
+
+    /// Set by the recognition callback when a final or error result arrives.
+    private var recognitionResult: String?
     private var bufferCount = 0
 
     var isListening = false
@@ -67,11 +69,10 @@ final class SpeechInput: @unchecked Sendable {
     }
 
     /// Listen for a single spoken command and return it as text.
-    /// Times out after 10 seconds of no recognition result.
+    /// Polls for result with a 10-second timeout.
     func listen() async -> String {
         guard isAuthorized, !isListening else { return "" }
 
-        // Check recognizer availability
         guard speechRecognizer.isAvailable else {
             #if os(macOS)
             errorMessage = "Speech not available. Enable Dictation in System Settings → Keyboard → Dictation"
@@ -84,66 +85,51 @@ final class SpeechInput: @unchecked Sendable {
         isListening = true
         partialResult = ""
         errorMessage = nil
+        recognitionResult = nil
         bufferCount = 0
 
-        defer {
-            stopListening()
+        startRecognition()
+
+        // Poll for result — avoids withCheckedContinuation which can stall
+        let start = ContinuousClock.now
+        while recognitionResult == nil && (ContinuousClock.now - start) < .seconds(10) {
+            try? await Task.sleep(for: .milliseconds(100))
         }
 
-        // Schedule timeout on the run loop (not Task.sleep, which can stall)
-        let timeoutWork = DispatchWorkItem { [weak self] in
-            Task { @MainActor [weak self] in
-                guard let self, self.inputContinuation != nil else { return }
-                let result = self.partialResult
-                if result.isEmpty {
-                    let fmt = self.audioEngine.inputNode.outputFormat(forBus: 0)
-                    let taskState = self.recognitionTask.map { "\($0.state.rawValue)" } ?? "nil"
-                    self.errorMessage = "No speech detected (bufs:\(self.bufferCount) fmt:\(Int(fmt.sampleRate))Hz/\(fmt.channelCount)ch task:\(taskState))"
-                }
-                self.inputContinuation?.resume(returning: result)
-                self.inputContinuation = nil
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: timeoutWork)
+        let result = recognitionResult ?? partialResult
+        stopListening()
 
-        let result = await withCheckedContinuation { continuation in
-            inputContinuation = continuation
-            startRecognition()
+        if result.isEmpty {
+            let fmt = audioEngine.inputNode.outputFormat(forBus: 0)
+            let taskState = recognitionTask.map { "state=\($0.state.rawValue)" } ?? "nil"
+            errorMessage = "No speech detected (bufs:\(bufferCount) fmt:\(Int(fmt.sampleRate))Hz/\(fmt.channelCount)ch \(taskState))"
         }
 
-        timeoutWork.cancel()
         return result
     }
 
     /// Start the recognition pipeline.
     private func startRecognition() {
-        // Cancel any previous task
         recognitionTask?.cancel()
         recognitionTask = nil
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         request.addsPunctuation = false
-        // Don't require on-device recognition — the model may not be downloaded
-        // even when supportsOnDeviceRecognition reports true.
         request.requiresOnDeviceRecognition = false
 
-        // Set contextual strings from game vocabulary
         if !gameVocabulary.isEmpty {
             request.contextualStrings = Array(gameVocabulary.prefix(100))
         }
 
         self.recognitionRequest = request
 
-        // Set up audio input
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
-        // Validate audio format
         guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
             errorMessage = "No audio input device available"
-            inputContinuation?.resume(returning: "")
-            inputContinuation = nil
+            recognitionResult = ""
             return
         }
 
@@ -159,12 +145,10 @@ final class SpeechInput: @unchecked Sendable {
             try audioEngine.start()
         } catch {
             errorMessage = "Audio engine failed to start: \(error.localizedDescription)"
-            inputContinuation?.resume(returning: "")
-            inputContinuation = nil
+            recognitionResult = ""
             return
         }
 
-        // Start recognition
         recognitionTask = speechRecognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
             let transcription = result?.bestTranscription.formattedString
             let isFinal = result?.isFinal ?? false
@@ -176,10 +160,8 @@ final class SpeechInput: @unchecked Sendable {
 
                 if let transcription {
                     self.partialResult = transcription
-
                     if isFinal {
-                        self.inputContinuation?.resume(returning: transcription)
-                        self.inputContinuation = nil
+                        self.recognitionResult = transcription
                     }
                 }
 
@@ -187,8 +169,10 @@ final class SpeechInput: @unchecked Sendable {
                     if nsError?.domain != "kAFAssistantErrorDomain" || nsError?.code != 216 {
                         self.errorMessage = errorDesc
                     }
-                    self.inputContinuation?.resume(returning: self.partialResult)
-                    self.inputContinuation = nil
+                    // Signal completion on error
+                    if self.recognitionResult == nil {
+                        self.recognitionResult = self.partialResult
+                    }
                 }
             }
         }
