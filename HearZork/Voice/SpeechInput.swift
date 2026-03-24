@@ -14,9 +14,11 @@ final class SpeechInput: @unchecked Sendable {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
 
-    /// Set by the recognition callback when a final or error result arrives.
-    private var recognitionResult: String?
-    private var bufferCount = 0
+    /// Thread-safe completion for the current listen() call.
+    /// Uses a lock so the continuation can be resumed from any thread.
+    private let completionLock = NSLock()
+    @ObservationIgnored nonisolated(unsafe) private var _listenContinuation: CheckedContinuation<String, Never>?
+    @ObservationIgnored nonisolated(unsafe) private var _listenCompleted = false
 
     var isListening = false
     var isAuthorized = false
@@ -69,7 +71,6 @@ final class SpeechInput: @unchecked Sendable {
     }
 
     /// Listen for a single spoken command and return it as text.
-    /// Polls for result with a 10-second timeout.
     func listen() async -> String {
         guard isAuthorized, !isListening else { return "" }
 
@@ -85,27 +86,44 @@ final class SpeechInput: @unchecked Sendable {
         isListening = true
         partialResult = ""
         errorMessage = nil
-        recognitionResult = nil
-        bufferCount = 0
 
-        startRecognition()
+        let result = await withCheckedContinuation { (continuation: CheckedContinuation<String, Never>) in
+            completionLock.lock()
+            _listenContinuation = continuation
+            _listenCompleted = false
+            completionLock.unlock()
 
-        // Poll for result — avoids withCheckedContinuation which can stall
-        let start = ContinuousClock.now
-        while recognitionResult == nil && (ContinuousClock.now - start) < .seconds(10) {
-            try? await Task.sleep(for: .milliseconds(100))
+            startRecognition()
+
+            // Timeout on a global queue — completely independent of MainActor
+            DispatchQueue.global().asyncAfter(deadline: .now() + 10) { [weak self] in
+                self?.completeListening(with: nil)
+            }
         }
 
-        let result = recognitionResult ?? partialResult
         stopListening()
 
-        if result.isEmpty {
+        if result.isEmpty && errorMessage == nil {
             let fmt = audioEngine.inputNode.outputFormat(forBus: 0)
-            let taskState = recognitionTask.map { "state=\($0.state.rawValue)" } ?? "nil"
-            errorMessage = "No speech detected (bufs:\(bufferCount) fmt:\(Int(fmt.sampleRate))Hz/\(fmt.channelCount)ch \(taskState))"
+            errorMessage = "No speech detected (\(Int(fmt.sampleRate))Hz/\(fmt.channelCount)ch)"
         }
 
         return result
+    }
+
+    /// Thread-safe: resume the listen continuation exactly once.
+    /// Can be called from any thread (recognition callback, timeout, etc).
+    private nonisolated func completeListening(with text: String?) {
+        completionLock.lock()
+        guard !_listenCompleted, let continuation = _listenContinuation else {
+            completionLock.unlock()
+            return
+        }
+        _listenCompleted = true
+        _listenContinuation = nil
+        completionLock.unlock()
+
+        continuation.resume(returning: text ?? "")
     }
 
     /// Start the recognition pipeline.
@@ -129,15 +147,12 @@ final class SpeechInput: @unchecked Sendable {
 
         guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
             errorMessage = "No audio input device available"
-            recognitionResult = ""
+            completeListening(with: "")
             return
         }
 
-        inputNode.installTap(onBus: 0, bufferSize: 4096, format: recordingFormat) { @Sendable [weak self] buffer, _ in
+        inputNode.installTap(onBus: 0, bufferSize: 4096, format: recordingFormat) { @Sendable buffer, _ in
             request.append(buffer)
-            Task { @MainActor [weak self] in
-                self?.bufferCount += 1
-            }
         }
 
         do {
@@ -145,35 +160,34 @@ final class SpeechInput: @unchecked Sendable {
             try audioEngine.start()
         } catch {
             errorMessage = "Audio engine failed to start: \(error.localizedDescription)"
-            recognitionResult = ""
+            completeListening(with: "")
             return
         }
 
+        // Recognition callback fires on an arbitrary thread.
+        // We resume the continuation directly — no MainActor hop needed.
         recognitionTask = speechRecognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
-            let transcription = result?.bestTranscription.formattedString
-            let isFinal = result?.isFinal ?? false
-            let errorDesc = error?.localizedDescription
-            let nsError = error.map { $0 as NSError }
+            guard let self else { return }
 
-            Task { @MainActor [weak self] in
-                guard let self else { return }
+            if let result {
+                let text = result.bestTranscription.formattedString
+                // Update UI on MainActor
+                Task { @MainActor in
+                    self.partialResult = text
+                }
+                if result.isFinal {
+                    self.completeListening(with: text)
+                }
+            }
 
-                if let transcription {
-                    self.partialResult = transcription
-                    if isFinal {
-                        self.recognitionResult = transcription
+            if let error {
+                let nsError = error as NSError
+                if nsError.domain != "kAFAssistantErrorDomain" || nsError.code != 216 {
+                    Task { @MainActor in
+                        self.errorMessage = error.localizedDescription
                     }
                 }
-
-                if nsError != nil {
-                    if nsError?.domain != "kAFAssistantErrorDomain" || nsError?.code != 216 {
-                        self.errorMessage = errorDesc
-                    }
-                    // Signal completion on error
-                    if self.recognitionResult == nil {
-                        self.recognitionResult = self.partialResult
-                    }
-                }
+                self.completeListening(with: nil)
             }
         }
     }
@@ -190,7 +204,6 @@ final class SpeechInput: @unchecked Sendable {
     }
 
     /// Post-process recognized text against the game vocabulary.
-    /// Corrects near-misses using edit distance matching.
     func correctWithVocabulary(_ text: String) -> String {
         guard !gameVocabulary.isEmpty else { return text }
 
@@ -215,7 +228,6 @@ final class SpeechInput: @unchecked Sendable {
         return corrected.joined(separator: " ")
     }
 
-    /// Simple Levenshtein edit distance.
     private func editDistance(_ a: String, _ b: String) -> Int {
         let a = Array(a)
         let b = Array(b)
