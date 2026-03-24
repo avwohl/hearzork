@@ -4,14 +4,7 @@ import SwiftUI
 struct HearZorkApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LibraryView()
         }
-    }
-}
-
-struct ContentView: View {
-    var body: some View {
-        Text("HearZork")
-            .font(.largeTitle)
     }
 }

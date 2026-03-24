@@ -21,10 +21,16 @@
 		A3F44ED59D2C439C9CF9743F /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		B68DBF948C76556F2236B91A /* ObjectTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */; };
 		B8769D73357DEB4CF9A39EFE /* TextEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */; };
+		B8C62182AA02D165D57C68FB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
 		C085D70EC9A5DD5D81927BDB /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C683883B7BB42645F30A8CA /* Memory.swift */; };
 		C482BE0EBE2A3A66533D35B0 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426F82944FDF8D46A16E618C /* Header.swift */; };
+		C5AFF3732133811EA75BDDDE /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */; };
+		CEDB282D12B3650C941628EB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
 		D1D9B1B94F8A6376682893A4 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4384E81873394A514CBE95 /* Instruction.swift */; };
+		DCA3AB761A46E8AC2CEB8BFC /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09E87248F188104103E5385 /* GameViewModel.swift */; };
+		E2BE47B9ED0DEA8D00A1993F /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09E87248F188104103E5385 /* GameViewModel.swift */; };
 		EF75D67CF7E8EDA6F3A65DDB /* HearZorkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */; };
+		EF965374669CBBC5B9E47D79 /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */; };
 		F0A95133D37C57E32E9DD3EC /* ObjectTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */; };
 		F4A82081B8DA0DAD63E90861 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325635E6AC606413D71BBA28 /* IntegrationTests.swift */; };
 		F740E23374446AD576838188 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4384E81873394A514CBE95 /* Instruction.swift */; };
@@ -42,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEncoderTests.swift; sourceTree = "<group>"; };
+		12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
 		17152953C9D4752C85437CF0 /* IOSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSystem.swift; sourceTree = "<group>"; };
 		1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HearZorkApp.swift; sourceTree = "<group>"; };
 		325635E6AC606413D71BBA28 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
@@ -54,12 +61,24 @@
 		C9460AD14980414F9A3F61CC /* MemoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTests.swift; sourceTree = "<group>"; };
 		EA550BC999A319320DC51D8E /* HearZork.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HearZork.entitlements; sourceTree = "<group>"; };
 		EAE6E1E560F7CEDE093482D8 /* HearZork_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HearZork_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC9E629C68A88C2D52E993F2 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processor.swift; sourceTree = "<group>"; };
+		F09E87248F188104103E5385 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectTable.swift; sourceTree = "<group>"; };
 		FAA540FA93F3CC3073C90303 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0735B487A1134AD266CA76F0 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */,
+				F09E87248F188104103E5385 /* GameViewModel.swift */,
+				EC9E629C68A88C2D52E993F2 /* LibraryView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		28A4675161A56FF95D01A730 /* ZMachine */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +99,7 @@
 			children = (
 				EA550BC999A319320DC51D8E /* HearZork.entitlements */,
 				C672F3D26D625603A8B9C15B /* App */,
+				0735B487A1134AD266CA76F0 /* UI */,
 				28A4675161A56FF95D01A730 /* ZMachine */,
 			);
 			path = HearZork;
@@ -230,11 +250,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF965374669CBBC5B9E47D79 /* ConsoleView.swift in Sources */,
 				219274B14B8758399B975EAE /* Dictionary.swift in Sources */,
+				E2BE47B9ED0DEA8D00A1993F /* GameViewModel.swift in Sources */,
 				C482BE0EBE2A3A66533D35B0 /* Header.swift in Sources */,
 				9A8533BEA13B2CC114726078 /* HearZorkApp.swift in Sources */,
 				24B532DBF117868E15444F46 /* IOSystem.swift in Sources */,
 				F740E23374446AD576838188 /* Instruction.swift in Sources */,
+				B8C62182AA02D165D57C68FB /* LibraryView.swift in Sources */,
 				C085D70EC9A5DD5D81927BDB /* Memory.swift in Sources */,
 				F0A95133D37C57E32E9DD3EC /* ObjectTable.swift in Sources */,
 				0D176F7D0A09185D9AA2D2B2 /* Processor.swift in Sources */,
@@ -246,11 +269,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5AFF3732133811EA75BDDDE /* ConsoleView.swift in Sources */,
 				A3F44ED59D2C439C9CF9743F /* Dictionary.swift in Sources */,
+				DCA3AB761A46E8AC2CEB8BFC /* GameViewModel.swift in Sources */,
 				835FF9A45272B076C74C1485 /* Header.swift in Sources */,
 				EF75D67CF7E8EDA6F3A65DDB /* HearZorkApp.swift in Sources */,
 				334FB3BDDD51E2BEA4018856 /* IOSystem.swift in Sources */,
 				D1D9B1B94F8A6376682893A4 /* Instruction.swift in Sources */,
+				CEDB282D12B3650C941628EB /* LibraryView.swift in Sources */,
 				448D40044138E7E14E4F54E9 /* Memory.swift in Sources */,
 				B68DBF948C76556F2236B91A /* ObjectTable.swift in Sources */,
 				8FA3000DC3FE478D78E52641 /* Processor.swift in Sources */,
