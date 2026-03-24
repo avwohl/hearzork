@@ -1,5 +1,5 @@
 import AVFoundation
-import Speech
+@preconcurrency import Speech
 
 /// Speech recognition engine using SFSpeechRecognizer with on-device processing.
 /// Captures microphone audio via AVAudioEngine and converts speech to text.
@@ -27,7 +27,7 @@ final class SpeechInput: @unchecked Sendable {
     /// Request microphone and speech recognition permissions.
     func requestAuthorization() async -> Bool {
         let speechStatus = await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
-            SFSpeechRecognizer.requestAuthorization { status in
+            SFSpeechRecognizer.requestAuthorization { @Sendable status in
                 Task { @MainActor in
                     continuation.resume(returning: status)
                 }
@@ -93,7 +93,7 @@ final class SpeechInput: @unchecked Sendable {
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { @Sendable buffer, _ in
             request.append(buffer)
         }
 
@@ -108,25 +108,29 @@ final class SpeechInput: @unchecked Sendable {
         }
 
         // Start recognition
-        recognitionTask = speechRecognizer.recognitionTask(with: request) { [weak self] result, error in
+        recognitionTask = speechRecognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
+            // Extract values before crossing isolation boundary
+            let transcription = result?.bestTranscription.formattedString
+            let isFinal = result?.isFinal ?? false
+            let errorDesc = error?.localizedDescription
+            let nsError = error.map { $0 as NSError }
+
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
-                if let result {
-                    self.partialResult = result.bestTranscription.formattedString
+                if let transcription {
+                    self.partialResult = transcription
 
-                    if result.isFinal {
-                        let text = result.bestTranscription.formattedString
-                        self.inputContinuation?.resume(returning: text)
+                    if isFinal {
+                        self.inputContinuation?.resume(returning: transcription)
                         self.inputContinuation = nil
                     }
                 }
 
-                if let error {
+                if nsError != nil {
                     // Don't report cancellation as an error
-                    let nsError = error as NSError
-                    if nsError.domain != "kAFAssistantErrorDomain" || nsError.code != 216 {
-                        self.errorMessage = error.localizedDescription
+                    if nsError?.domain != "kAFAssistantErrorDomain" || nsError?.code != 216 {
+                        self.errorMessage = errorDesc
                     }
                     self.inputContinuation?.resume(returning: self.partialResult)
                     self.inputContinuation = nil
