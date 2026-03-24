@@ -30,6 +30,25 @@ final class SpeechInput: @unchecked Sendable {
 
     /// Request microphone and speech recognition permissions.
     func requestAuthorization() async -> Bool {
+        // Request microphone access first — speech recognition needs it
+        #if os(iOS)
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
+            try audioSession.setActive(true)
+        } catch {
+            errorMessage = "Audio session setup failed: \(error.localizedDescription)"
+            return false
+        }
+        #elseif os(macOS)
+        let micGranted = await AVCaptureDevice.requestAccess(for: .audio)
+        guard micGranted else {
+            errorMessage = "Microphone access not granted"
+            return false
+        }
+        #endif
+
+        // Then request speech recognition permission
         let speechStatus = await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
             SFSpeechRecognizer.requestAuthorization { @Sendable status in
                 Task { @MainActor in
@@ -42,24 +61,6 @@ final class SpeechInput: @unchecked Sendable {
             errorMessage = "Speech recognition not authorized"
             return false
         }
-
-        #if os(iOS)
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
-            try audioSession.setActive(true)
-        } catch {
-            errorMessage = "Audio session setup failed: \(error.localizedDescription)"
-            return false
-        }
-        #elseif os(macOS)
-        // macOS requires explicit microphone permission request
-        let micGranted = await AVCaptureDevice.requestAccess(for: .audio)
-        guard micGranted else {
-            errorMessage = "Microphone access not granted"
-            return false
-        }
-        #endif
 
         isAuthorized = true
         return true
