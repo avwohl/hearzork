@@ -22,7 +22,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.awohl.hearzork
         PRODUCT_NAME: HearZork
         INFOPLIST_VALUES: >-
-          PRODUCT_NAME=$(TARGET_NAME)
+          CFBundleName=HearZork
           CFBundleDisplayName=HearZork
           NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay.
           NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.
@@ -42,7 +42,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.awohl.hearzork
         PRODUCT_NAME: HearZork
         INFOPLIST_VALUES: >-
-          PRODUCT_NAME=$(TARGET_NAME)
+          CFBundleName=HearZork
           CFBundleDisplayName=HearZork
           NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay.
           NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.

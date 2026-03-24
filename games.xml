@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<games version="1" updated="2026-03-24">
+  <!--
+    HearZork Game Catalog
+    Games listed here are freely distributable or have been released as freeware.
+    Download URLs point to the IF Archive (ifarchive.org) or GitHub releases.
+    copyright_url points to license/rights information for each game.
+  -->
+
+  <!-- Infocom Classics (released as freeware by Activision) -->
+  <game id="zork1">
+    <title>Zork I: The Great Underground Empire</title>
+    <author>Infocom (Marc Blank, Dave Lebling)</author>
+    <year>1980</year>
+    <description>The classic that started it all. Explore the Great Underground Empire, collect treasures, and avoid being eaten by a grue.</description>
+    <filename>zork1.z3</filename>
+    <version>3</version>
+    <sha256>37084966477dff679282de42974b2077156b1bd68fad92a65d4ea94d8eb64d79</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/zork1.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=0dbnusxunq7fw5ro</copyright_url>
+    <category>classic</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="zork2">
+    <title>Zork II: The Wizard of Frobozz</title>
+    <author>Infocom (Marc Blank, Dave Lebling)</author>
+    <year>1981</year>
+    <description>Continue your underground adventure. The Wizard of Frobozz lurks in the depths, casting spells to confound you.</description>
+    <filename>zork2.z3</filename>
+    <version>3</version>
+    <sha256>3ae7d5558943e9721f3e4b273c8a7faec1a03a604e1ae4ee1cde472c21cb24ac</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/zork2.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=yzzm4puxyjakk8c4</copyright_url>
+    <category>classic</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <game id="zork3">
+    <title>Zork III: The Dungeon Master</title>
+    <author>Infocom (Marc Blank, Dave Lebling)</author>
+    <year>1982</year>
+    <description>The final chapter of the Zork trilogy. A more contemplative journey through the deepest reaches of the Great Underground Empire.</description>
+    <filename>zork_iii.z3</filename>
+    <version>3</version>
+    <sha256>b637a242865d059890184164ce8dec28554cc80901dcbf26c740b2d1ed0d4eb8</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/zork_iii.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=vrsot1zgy1wfcdru</copyright_url>
+    <category>classic</category>
+    <difficulty>advanced</difficulty>
+  </game>
+
+  <game id="enchanter">
+    <title>Enchanter</title>
+    <author>Infocom (Marc Blank, Dave Lebling)</author>
+    <year>1983</year>
+    <description>You are a novice enchanter sent to defeat the evil warlock Krill. Learn spells, solve puzzles, and save the land.</description>
+    <filename>enchanter.z3</filename>
+    <version>3</version>
+    <sha256>bc9b99be980a1aa67c1aef89d4e5878f1f03edab62fe43ae23b2f7e2c41b1dc8</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/enchanter.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=vu4xhul3abknifcr</copyright_url>
+    <category>classic</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <game id="planetfall">
+    <title>Planetfall</title>
+    <author>Infocom (Steve Meretzky)</author>
+    <year>1983</year>
+    <description>Stranded on a deserted planet with only a quirky robot named Floyd for company. A beloved classic with humor and heart.</description>
+    <filename>planetfall.z3</filename>
+    <version>3</version>
+    <sha256>fb6023561fd4a15aba5d921fc9213bacc2d99c513927a96aaa96e03ea86d9ca6</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/planetfall.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=xe6kb3cuqwie2q38</copyright_url>
+    <category>classic</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <game id="ballyhoo">
+    <title>Ballyhoo</title>
+    <author>Infocom (Jeff O'Neill)</author>
+    <year>1986</year>
+    <description>A circus mystery. The owner's daughter has been kidnapped and you must navigate the big top to find her.</description>
+    <filename>ballyhoo.z3</filename>
+    <version>3</version>
+    <sha256>05e6558febc163cb6e6ea6fb0d2af3a9238fe8cb1360a9245c3e81ff01da0b44</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/ballyhoo.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=bfhkv396s3qulr4g</copyright_url>
+    <category>classic</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <game id="cutthroats">
+    <title>Cutthroats</title>
+    <author>Infocom (Michael Berlyn, Jerry Wolper)</author>
+    <year>1984</year>
+    <description>Dive for sunken treasure in this nautical adventure. But watch out — your partners may have plans of their own.</description>
+    <filename>cutthroats.z3</filename>
+    <version>3</version>
+    <sha256>7b163a675a494a6373fc98742d02c11dc11d6e4178c3caeaadf6f250c90c5e1a</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/cutthroats.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=4ao65o1u0xuvz8jl</copyright_url>
+    <category>classic</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <!-- Community Classics (free to distribute) -->
+  <game id="advent">
+    <title>Adventure (Colossal Cave)</title>
+    <author>Will Crowther, Don Woods (Z-machine port by Graham Nelson)</author>
+    <year>1977</year>
+    <description>The original text adventure. Explore a vast cave system, collect treasures, and discover the magic word XYZZY.</description>
+    <filename>advent.z3</filename>
+    <version>3</version>
+    <sha256>03c19b3730f1b46b6e882944a255d1d58e4148e51fcce423dcd96792f476ebfa</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/advent.z3</url>
+    <copyright_url>https://ifdb.org/viewgame?id=fft6pu91j85y4acv</copyright_url>
+    <category>classic</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="curses">
+    <title>Curses</title>
+    <author>Graham Nelson</author>
+    <year>1993</year>
+    <description>Explore your family's attic and uncover centuries of secrets in this landmark work of interactive fiction.</description>
+    <filename>curses.z5</filename>
+    <version>5</version>
+    <sha256>330100bf1c1ab8ed64065ceb58145ebb87cb6faef5b331fbc6684be4f14fe7da</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/curses.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=plvzam05bmz3enh8</copyright_url>
+    <category>community</category>
+    <difficulty>advanced</difficulty>
+  </game>
+
+  <game id="balances">
+    <title>Balances</title>
+    <author>Graham Nelson</author>
+    <year>1994</year>
+    <description>A short adventure set in the Enchanter universe. A good introduction to interactive fiction.</description>
+    <filename>balances.z5</filename>
+    <version>5</version>
+    <sha256>10e717578f85200c6aadc8149d95e43f7b6c09fb473770d309a0d6afe3b29538</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/balances.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=x6ne0bbd2oqm6h3a</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="photopia">
+    <title>Photopia</title>
+    <author>Adam Cadre</author>
+    <year>1998</year>
+    <description>A deeply moving story told through interwoven vignettes. Winner of the 1998 IF Competition.</description>
+    <filename>photopia.z5</filename>
+    <version>5</version>
+    <sha256>ba14a14dfdede4b7ad97846c13ca0ea07048334ac767649d9aa84add7fae20a5</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/photopia.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=ju778uv5xaswnlpl</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="shade">
+    <title>Shade</title>
+    <author>Andrew Plotkin</author>
+    <year>2000</year>
+    <description>You're packing for a trip to the desert. But something is very wrong in your apartment.</description>
+    <filename>shade.z5</filename>
+    <version>5</version>
+    <sha256>9c4111f13619766b9c928632271ed21edaa7e4f1ddd8fdbd64102841b17ebf05</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/shade.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=hsfc7fnl40k4a30q</copyright_url>
+    <category>community</category>
+    <difficulty>intermediate</difficulty>
+  </game>
+
+  <game id="spider_and_web">
+    <title>Spider and Web</title>
+    <author>Andrew Plotkin</author>
+    <year>1998</year>
+    <description>A spy thriller with a brilliant narrative twist. You are being interrogated about a mission gone wrong.</description>
+    <filename>spider_and_web.z5</filename>
+    <version>5</version>
+    <sha256>dd5b510fb04daaa2fa9a40fc94414eee3719a72e274c77288b41629e32470817</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/spider_and_web.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=2xyccw3pe0uovfad</copyright_url>
+    <category>community</category>
+    <difficulty>advanced</difficulty>
+  </game>
+
+  <game id="905">
+    <title>9:05</title>
+    <author>Adam Cadre</author>
+    <year>2000</year>
+    <description>A short game with a surprising twist. You wake up late for work. Or do you?</description>
+    <filename>905.z5</filename>
+    <version>5</version>
+    <sha256>0f41ff7811668e236060b399ced1cd0481c1bb624a8876fc7e16dc58816f1ecb</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/905.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=gv63szjkfan6c8jz</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="dreamhold">
+    <title>The Dreamhold</title>
+    <author>Andrew Plotkin</author>
+    <year>2004</year>
+    <description>Designed as an introduction to interactive fiction. Explore a mysterious wizard's keep with a built-in tutorial system.</description>
+    <filename>dreamhold.z8</filename>
+    <version>8</version>
+    <sha256>399dbfb92024d2a702029dd1921a1023569888941683d953d3755d6856ce2941</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/dreamhold.z8</url>
+    <copyright_url>https://ifdb.org/viewgame?id=cicutgla4gas6jfm</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="anchorhead">
+    <title>Anchorhead</title>
+    <author>Michael Gentry</author>
+    <year>1998</year>
+    <description>A Lovecraftian horror adventure. You've moved to a New England town with your husband. Dark secrets await.</description>
+    <filename>anchorhead.z8</filename>
+    <version>8</version>
+    <sha256>c2f28a4ddd9367c260946926a33c73a4b0cc38b1f327646cc1202182a28a10ff</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/anchorhead.z8</url>
+    <copyright_url>https://ifdb.org/viewgame?id=op0uw1gn1tjqmjt7</copyright_url>
+    <category>community</category>
+    <difficulty>advanced</difficulty>
+  </game>
+
+  <game id="adventureland">
+    <title>Adventureland</title>
+    <author>Scott Adams (Z-machine port)</author>
+    <year>1978</year>
+    <description>One of the earliest text adventures. Explore a fantasy land, collect treasures, and solve puzzles.</description>
+    <filename>adventureland.z5</filename>
+    <version>5</version>
+    <sha256>45a3840cdba26e3742c0ad3797ffaf7bd2eb284edee6b433e41fc908c283e930</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/adventureland.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=dy4ok8sdlut6ddj7</copyright_url>
+    <category>classic</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="acorncourt">
+    <title>Acorn Court</title>
+    <author>Todd S. Murchison</author>
+    <year>1997</year>
+    <description>A pleasant domestic romp. Feed the squirrels and enjoy a relaxing morning in your back yard.</description>
+    <filename>acorncourt.z5</filename>
+    <version>5</version>
+    <sha256>7b13c904bf7608fa0de902ce7ecd5fcd0e026f293fc67baa87b99a35a3190c9e</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/acorncourt.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=tqpowl1bsazox8v7</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="aisle">
+    <title>Aisle</title>
+    <author>Sam Barlow</author>
+    <year>1999</year>
+    <description>A one-move game with infinite possibilities. You are standing in an aisle of a grocery store.</description>
+    <filename>aisle.z5</filename>
+    <version>5</version>
+    <sha256>0fcd6d0056b47e140d579424f897354a9c92b2f5adc00d626a4fadb67b4bec38</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/aisle.z5</url>
+    <copyright_url>https://ifdb.org/viewgame?id=myzmierr65b67yb6</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+
+  <game id="castle_adventure">
+    <title>Castle Adventure</title>
+    <author>Ben Chenoweth</author>
+    <year>2002</year>
+    <description>Explore a medieval castle full of puzzles and secrets.</description>
+    <filename>castle_adventure.z8</filename>
+    <version>8</version>
+    <sha256>f3bbc1f355019a8137f20c56e7bec17c42206cf9c09ad00779d8a5e3b4209c2d</sha256>
+    <url>https://github.com/avwohl/hearzork/releases/download/games-v1/castle_adventure.z8</url>
+    <copyright_url>https://ifdb.org/viewgame?id=gv63szjkfan6c8jz</copyright_url>
+    <category>community</category>
+    <difficulty>beginner</difficulty>
+  </game>
+</games>

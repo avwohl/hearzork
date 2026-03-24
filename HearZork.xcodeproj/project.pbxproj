@@ -12,10 +12,17 @@
 		0D176F7D0A09185D9AA2D2B2 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
 		219274B14B8758399B975EAE /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		24B532DBF117868E15444F46 /* IOSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17152953C9D4752C85437CF0 /* IOSystem.swift */; };
+		2BA46E9A89991A610023A07F /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798A71716B86B0BD8AC376F0 /* AboutView.swift */; };
 		334FB3BDDD51E2BEA4018856 /* IOSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17152953C9D4752C85437CF0 /* IOSystem.swift */; };
+		3486CDE4D232A2F4591100A5 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798A71716B86B0BD8AC376F0 /* AboutView.swift */; };
 		448D40044138E7E14E4F54E9 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C683883B7BB42645F30A8CA /* Memory.swift */; };
 		485E78C48FBD12402FEAA65B /* TextDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF74A9DBE9AAEAF51F4A06A /* TextDecoder.swift */; };
+		525C8B4A358789E1DE22F125 /* GameStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B711B9C8137E692518FE26C /* GameStorage.swift */; };
 		52E376F5C9C0E76A12AA79CE /* TextDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF74A9DBE9AAEAF51F4A06A /* TextDecoder.swift */; };
+		53ECA73429E1A7D9A239E5A3 /* GameDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021CC2CD50C3460BF586881 /* GameDownloader.swift */; };
+		599CB8D7D989C786DB7FC505 /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C583494A083DF2E02B576403 /* GameCatalog.swift */; };
+		6E2AE39179C4B0B1798C1690 /* GameDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021CC2CD50C3460BF586881 /* GameDownloader.swift */; };
+		814B0C01F0AA1BA11837EA4E /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C583494A083DF2E02B576403 /* GameCatalog.swift */; };
 		835FF9A45272B076C74C1485 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426F82944FDF8D46A16E618C /* Header.swift */; };
 		85F316B98A8629A196AD1AC1 /* MemoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9460AD14980414F9A3F61CC /* MemoryTests.swift */; };
 		8FA3000DC3FE478D78E52641 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0A6FF0528BFA7FDBF4E88A /* Processor.swift */; };
@@ -23,6 +30,7 @@
 		A1F0B119919C29644493DB36 /* SpeechInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B198930E69914E12FFD5D1 /* SpeechInput.swift */; };
 		A3F44ED59D2C439C9CF9743F /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA540FA93F3CC3073C90303 /* Dictionary.swift */; };
 		B68DBF948C76556F2236B91A /* ObjectTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */; };
+		B7D87B974FBCD6DEADED3EC9 /* GameStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B711B9C8137E692518FE26C /* GameStorage.swift */; };
 		B8769D73357DEB4CF9A39EFE /* TextEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */; };
 		B8C62182AA02D165D57C68FB /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9E629C68A88C2D52E993F2 /* LibraryView.swift */; };
 		C085D70EC9A5DD5D81927BDB /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C683883B7BB42645F30A8CA /* Memory.swift */; };
@@ -58,14 +66,18 @@
 		17152953C9D4752C85437CF0 /* IOSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSystem.swift; sourceTree = "<group>"; };
 		19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechOutput.swift; sourceTree = "<group>"; };
 		1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HearZorkApp.swift; sourceTree = "<group>"; };
+		2B711B9C8137E692518FE26C /* GameStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStorage.swift; sourceTree = "<group>"; };
 		325635E6AC606413D71BBA28 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		3BADD5749040DD5F33BE5667 /* HearZorkTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HearZorkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		426F82944FDF8D46A16E618C /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
+		5021CC2CD50C3460BF586881 /* GameDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDownloader.swift; sourceTree = "<group>"; };
 		51B198930E69914E12FFD5D1 /* SpeechInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechInput.swift; sourceTree = "<group>"; };
 		6D4384E81873394A514CBE95 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
+		798A71716B86B0BD8AC376F0 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		7C683883B7BB42645F30A8CA /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		A2D6FC807357422C83B886EF /* HearZork_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearZork_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF74A9DBE9AAEAF51F4A06A /* TextDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDecoder.swift; sourceTree = "<group>"; };
+		C583494A083DF2E02B576403 /* GameCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
 		C9460AD14980414F9A3F61CC /* MemoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTests.swift; sourceTree = "<group>"; };
 		EA550BC999A319320DC51D8E /* HearZork.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HearZork.entitlements; sourceTree = "<group>"; };
 		EAE6E1E560F7CEDE093482D8 /* HearZork_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HearZork_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +92,7 @@
 		0735B487A1134AD266CA76F0 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				798A71716B86B0BD8AC376F0 /* AboutView.swift */,
 				12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */,
 				F09E87248F188104103E5385 /* GameViewModel.swift */,
 				EC9E629C68A88C2D52E993F2 /* LibraryView.swift */,
@@ -116,6 +129,7 @@
 			children = (
 				EA550BC999A319320DC51D8E /* HearZork.entitlements */,
 				C672F3D26D625603A8B9C15B /* App */,
+				B07EE288D16B105CA49233FD /* Model */,
 				0735B487A1134AD266CA76F0 /* UI */,
 				6C5A99F5A3329E8A1E19B0E2 /* Voice */,
 				28A4675161A56FF95D01A730 /* ZMachine */,
@@ -150,6 +164,16 @@
 				0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */,
 			);
 			path = ZMachineTests;
+			sourceTree = "<group>";
+		};
+		B07EE288D16B105CA49233FD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C583494A083DF2E02B576403 /* GameCatalog.swift */,
+				5021CC2CD50C3460BF586881 /* GameDownloader.swift */,
+				2B711B9C8137E692518FE26C /* GameStorage.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		C672F3D26D625603A8B9C15B /* App */ = {
@@ -270,8 +294,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3486CDE4D232A2F4591100A5 /* AboutView.swift in Sources */,
 				EF965374669CBBC5B9E47D79 /* ConsoleView.swift in Sources */,
 				219274B14B8758399B975EAE /* Dictionary.swift in Sources */,
+				814B0C01F0AA1BA11837EA4E /* GameCatalog.swift in Sources */,
+				53ECA73429E1A7D9A239E5A3 /* GameDownloader.swift in Sources */,
+				B7D87B974FBCD6DEADED3EC9 /* GameStorage.swift in Sources */,
 				E2BE47B9ED0DEA8D00A1993F /* GameViewModel.swift in Sources */,
 				C482BE0EBE2A3A66533D35B0 /* Header.swift in Sources */,
 				9A8533BEA13B2CC114726078 /* HearZorkApp.swift in Sources */,
@@ -291,8 +319,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BA46E9A89991A610023A07F /* AboutView.swift in Sources */,
 				C5AFF3732133811EA75BDDDE /* ConsoleView.swift in Sources */,
 				A3F44ED59D2C439C9CF9743F /* Dictionary.swift in Sources */,
+				599CB8D7D989C786DB7FC505 /* GameCatalog.swift in Sources */,
+				6E2AE39179C4B0B1798C1690 /* GameDownloader.swift in Sources */,
+				525C8B4A358789E1DE22F125 /* GameStorage.swift in Sources */,
 				DCA3AB761A46E8AC2CEB8BFC /* GameViewModel.swift in Sources */,
 				835FF9A45272B076C74C1485 /* Header.swift in Sources */,
 				EF75D67CF7E8EDA6F3A65DDB /* HearZorkApp.swift in Sources */,
@@ -405,7 +437,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_VALUES = "PRODUCT_NAME=$(TARGET_NAME) CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
+				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -480,7 +512,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_VALUES = "PRODUCT_NAME=$(TARGET_NAME) CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
+				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -498,7 +530,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_VALUES = "PRODUCT_NAME=$(TARGET_NAME) CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -515,7 +547,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_VALUES = "PRODUCT_NAME=$(TARGET_NAME) CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
