@@ -26,9 +26,11 @@ final class SpeechInput: @unchecked Sendable {
 
     /// Request microphone and speech recognition permissions.
     func requestAuthorization() async -> Bool {
-        let speechStatus = await withCheckedContinuation { continuation in
+        let speechStatus = await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
             SFSpeechRecognizer.requestAuthorization { status in
-                continuation.resume(returning: status)
+                Task { @MainActor in
+                    continuation.resume(returning: status)
+                }
             }
         }
 
