@@ -5,7 +5,7 @@ import AVFoundation
 @MainActor
 @Observable
 final class SpeechOutput: NSObject, @unchecked Sendable {
-    private let synthesizer = AVSpeechSynthesizer()
+    @ObservationIgnored nonisolated(unsafe) let synthesizer = AVSpeechSynthesizer()
 
     /// Thread-safe continuation for speakAndWait.
     private let continuationLock = NSLock()
