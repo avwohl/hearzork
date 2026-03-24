@@ -1,5 +1,8 @@
 import AVFoundation
 @preconcurrency import Speech
+#if os(macOS)
+import AVKit
+#endif
 
 /// Speech recognition engine using SFSpeechRecognizer with on-device processing.
 /// Captures microphone audio via AVAudioEngine and converts speech to text.
@@ -46,6 +49,13 @@ final class SpeechInput: @unchecked Sendable {
             try audioSession.setActive(true)
         } catch {
             errorMessage = "Audio session setup failed: \(error.localizedDescription)"
+            return false
+        }
+        #elseif os(macOS)
+        // macOS requires explicit microphone permission request
+        let micGranted = await AVCaptureDevice.requestAccess(for: .audio)
+        guard micGranted else {
+            errorMessage = "Microphone access not granted"
             return false
         }
         #endif

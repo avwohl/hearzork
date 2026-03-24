@@ -30,6 +30,11 @@ struct LibraryView: View {
                 #if os(iOS)
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 #endif
+
+                // Voice listening indicator
+                if voice.voiceEnabled {
+                    voiceStatusBar
+                }
             }
             .navigationTitle("HearZork")
             .toolbar { toolbarContent }
@@ -372,6 +377,37 @@ struct LibraryView: View {
                 selectedGame = nil
             }
         }
+    }
+
+    // MARK: - Voice status bar
+
+    private var voiceStatusBar: some View {
+        HStack(spacing: 10) {
+            Image(systemName: voice.isListening ? "waveform.circle.fill" : (voice.speechOutput.isSpeaking ? "speaker.wave.2.fill" : "mic.circle"))
+                .font(.title3)
+                .foregroundStyle(voice.isListening ? .green : (voice.speechOutput.isSpeaking ? .blue : .secondary))
+                .symbolEffect(.pulse, isActive: voice.isListening)
+
+            if voice.isListening {
+                Text(voice.speechInput.partialResult.isEmpty ? "Listening — speak a command..." : voice.speechInput.partialResult)
+                    .font(.subheadline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+            } else if voice.speechOutput.isSpeaking {
+                Text("Speaking...")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Voice mode active")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+        .accessibilityLabel(voice.isListening ? "Listening for voice command" : "Voice mode active")
     }
 
     // MARK: - Voice navigation
