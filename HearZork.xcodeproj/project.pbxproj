@@ -22,6 +22,7 @@
 		53ECA73429E1A7D9A239E5A3 /* GameDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021CC2CD50C3460BF586881 /* GameDownloader.swift */; };
 		599CB8D7D989C786DB7FC505 /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C583494A083DF2E02B576403 /* GameCatalog.swift */; };
 		6E2AE39179C4B0B1798C1690 /* GameDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021CC2CD50C3460BF586881 /* GameDownloader.swift */; };
+		6FFF21670607C7AAB3218E4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9344C14E8EB6297C8F921371 /* Assets.xcassets */; };
 		814B0C01F0AA1BA11837EA4E /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C583494A083DF2E02B576403 /* GameCatalog.swift */; };
 		835FF9A45272B076C74C1485 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426F82944FDF8D46A16E618C /* Header.swift */; };
 		85F316B98A8629A196AD1AC1 /* MemoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9460AD14980414F9A3F61CC /* MemoryTests.swift */; };
@@ -45,6 +46,7 @@
 		EF75D67CF7E8EDA6F3A65DDB /* HearZorkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0E0CE00E39B759D187B6E /* HearZorkApp.swift */; };
 		EF965374669CBBC5B9E47D79 /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */; };
 		F0A95133D37C57E32E9DD3EC /* ObjectTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EC1FE05F8BEB56F61D15B1 /* ObjectTable.swift */; };
+		F411A47702571C8C231D5F28 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9344C14E8EB6297C8F921371 /* Assets.xcassets */; };
 		F4A82081B8DA0DAD63E90861 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325635E6AC606413D71BBA28 /* IntegrationTests.swift */; };
 		F740E23374446AD576838188 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4384E81873394A514CBE95 /* Instruction.swift */; };
 /* End PBXBuildFile section */
@@ -62,6 +64,7 @@
 /* Begin PBXFileReference section */
 		090F1270886246840C5277F4 /* ComplianceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplianceTests.swift; sourceTree = "<group>"; };
 		0D45DB240A58D05CC4EA94FD /* TextEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEncoderTests.swift; sourceTree = "<group>"; };
+		11A266694D958B41B1078286 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		12146EDC5ADDB8C755DCC7AA /* ConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
 		17152953C9D4752C85437CF0 /* IOSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSystem.swift; sourceTree = "<group>"; };
 		19F761A5DBF61F0A6CC9E236 /* SpeechOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechOutput.swift; sourceTree = "<group>"; };
@@ -75,6 +78,7 @@
 		6D4384E81873394A514CBE95 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		798A71716B86B0BD8AC376F0 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		7C683883B7BB42645F30A8CA /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		9344C14E8EB6297C8F921371 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2D6FC807357422C83B886EF /* HearZork_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearZork_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF74A9DBE9AAEAF51F4A06A /* TextDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDecoder.swift; sourceTree = "<group>"; };
 		C583494A083DF2E02B576403 /* GameCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
@@ -128,8 +132,10 @@
 			isa = PBXGroup;
 			children = (
 				EA550BC999A319320DC51D8E /* HearZork.entitlements */,
+				11A266694D958B41B1078286 /* Info.plist */,
 				C672F3D26D625603A8B9C15B /* App */,
 				B07EE288D16B105CA49233FD /* Model */,
+				EF11C220D8224F7EAF45039B /* Resources */,
 				0735B487A1134AD266CA76F0 /* UI */,
 				6C5A99F5A3329E8A1E19B0E2 /* Voice */,
 				28A4675161A56FF95D01A730 /* ZMachine */,
@@ -184,6 +190,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		EF11C220D8224F7EAF45039B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9344C14E8EB6297C8F921371 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		F4FADAA270A28478D0A302C2 = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +233,7 @@
 			buildConfigurationList = 2C675576F5422F199D560A4E /* Build configuration list for PBXNativeTarget "HearZork_iOS" */;
 			buildPhases = (
 				D6BCFA1ADBC467B1ABA62077 /* Sources */,
+				AB689A24F6BC4F90CFB2FF2B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -236,6 +251,7 @@
 			buildConfigurationList = 694E560A806F92D62920EA95 /* Build configuration list for PBXNativeTarget "HearZork_macOS" */;
 			buildPhases = (
 				AC32A338E71291E22CE10087 /* Sources */,
+				33237912E6A668924E3A44F4 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -277,6 +293,25 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		33237912E6A668924E3A44F4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F411A47702571C8C231D5F28 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB689A24F6BC4F90CFB2FF2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6FFF21670607C7AAB3218E4A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AB2AAADCC6A116842A396C12 /* Sources */ = {
@@ -437,7 +472,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
+				INFOPLIST_FILE = HearZork/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearZork;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "HearZork uses speech recognition for voice-controlled gameplay.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -512,7 +551,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands. UILaunchScreen={}";
+				INFOPLIST_FILE = HearZork/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearZork;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "HearZork uses speech recognition for voice-controlled gameplay.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -530,7 +573,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_FILE = HearZork/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearZork;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "HearZork uses speech recognition for voice-controlled gameplay.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -547,7 +593,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HearZork/HearZork.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_VALUES = "CFBundleName=HearZork CFBundleDisplayName=HearZork NSSpeechRecognitionUsageDescription=HearZork uses speech recognition for voice-controlled gameplay. NSMicrophoneUsageDescription=HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_FILE = HearZork/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearZork;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "HearZork needs microphone access to hear your voice commands.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "HearZork uses speech recognition for voice-controlled gameplay.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
