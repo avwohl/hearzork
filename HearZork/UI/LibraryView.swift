@@ -232,6 +232,7 @@ struct LibraryView: View {
 
     private func gameRow(_ game: GameFile) -> some View {
         Button {
+            voice.stopLibraryLoop()
             selectedGame = game
         } label: {
             HStack {
@@ -355,26 +356,13 @@ struct LibraryView: View {
 
     @ViewBuilder
     private func gameScreen(for game: GameFile) -> some View {
-        let vm = GameViewModel()
-        GameScreen(vm: vm, game: game, voice: voice) {
+        GameScreen(game: game, voice: voice) {
             selectedGame = nil
             launchWithVoice = false
             // Restart voice listening in library if voice is still on
             if voice.voiceEnabled {
                 configureVoiceLoop()
                 voice.startLibraryLoop()
-            }
-        }
-        .onAppear {
-            do {
-                try vm.loadGame(from: game.url)
-                // If launched via voice or voice is enabled, auto-enable voice in game
-                if voice.voiceEnabled {
-                    Task { await vm.setVoiceMode(true, coordinator: voice) }
-                }
-            } catch {
-                errorMessage = "Failed to load game: \(error.localizedDescription)"
-                selectedGame = nil
             }
         }
     }
@@ -572,7 +560,7 @@ struct GameFile: Identifiable, Sendable {
 // MARK: - Game screen wrapper
 
 struct GameScreen: View {
-    let vm: GameViewModel
+    @State private var vm = GameViewModel()
     let game: GameFile
     var voice: VoiceCoordinator
     let onDismiss: () -> Void
@@ -621,6 +609,17 @@ struct GameScreen: View {
                         }
                     }
                 }
+        }
+        .task {
+            guard !vm.isRunning else { return }
+            do {
+                try vm.loadGame(from: game.url)
+                if voice.voiceEnabled {
+                    await vm.setVoiceMode(true, coordinator: voice)
+                }
+            } catch {
+                onDismiss()
+            }
         }
     }
 

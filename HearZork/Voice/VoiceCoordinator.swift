@@ -73,12 +73,12 @@ final class VoiceCoordinator: @unchecked Sendable {
         stopLibraryLoop()
         _loopActive = true
 
-        let localCount = libraryLocalGames.count
+        let localGames = libraryLocalGames
         let catalogCount = libraryCatalogGames.count
 
         DispatchQueue.global(qos: .userInitiated).async { [self] in
             // Welcome announcement
-            let greeting = buildAnnouncement(localCount: localCount, catalogCount: catalogCount)
+            let greeting = buildAnnouncement(localGames: localGames, catalogCount: catalogCount)
             speakSync(greeting)
 
             // Command loop
@@ -147,15 +147,17 @@ final class VoiceCoordinator: @unchecked Sendable {
 
     // MARK: - Library command handling (runs on background queue)
 
-    nonisolated private func buildAnnouncement(localCount: Int, catalogCount: Int) -> String {
+    nonisolated private func buildAnnouncement(localGames: [GameFile], catalogCount: Int) -> String {
         var greeting = "Welcome to HearZork."
-        if localCount > 0 {
-            greeting += " You have \(localCount) game\(localCount == 1 ? "" : "s") ready to play."
+        if !localGames.isEmpty {
+            let names = localGames.map(\.displayName).joined(separator: ", ")
+            greeting += " You have \(localGames.count) game\(localGames.count == 1 ? "" : "s") ready to play: \(names)."
+            greeting += " Say the name of a game to play it."
         }
         if catalogCount > 0 {
             greeting += " \(catalogCount) games available to browse."
         }
-        greeting += " Say the name of a game to play it, or say help for commands."
+        greeting += " Say help for commands."
         return greeting
     }
 
@@ -164,13 +166,19 @@ final class VoiceCoordinator: @unchecked Sendable {
 
         // Help
         if lower == "help" || lower == "commands" {
-            speakSync(
-                "Say the name of a game to play it. " +
-                "Say download and a game name to download it. " +
+            var helpText = ""
+            let games = libraryLocalGames
+            if !games.isEmpty {
+                let names = games.map(\.displayName).joined(separator: ", ")
+                helpText += "Your games: \(names). Say a game name to play it. "
+            } else {
+                helpText += "Say the name of a game to play it. "
+            }
+            helpText += "Say download and a game name to download it. " +
                 "Say list games to hear your downloaded games. " +
                 "Say browse to hear the catalog. " +
                 "Say voice off to disable voice mode."
-            )
+            speakSync(helpText)
             return
         }
 
@@ -320,6 +328,24 @@ final class VoiceCoordinator: @unchecked Sendable {
         if let game = games.first(where: { lower.contains($0.displayName.lowercased()) }) {
             return game
         }
+        // Fuzzy: strip non-alphanumeric and compare
+        let inputStripped = lower.filter { $0.isLetter || $0.isNumber }
+        for game in games {
+            let gameStripped = game.displayName.lowercased().filter { $0.isLetter || $0.isNumber }
+            if inputStripped == gameStripped || inputStripped.contains(gameStripped) || gameStripped.contains(inputStripped) {
+                return game
+            }
+        }
+        // Fuzzy: convert numbers to roman numerals and try again
+        let romanized = Self.romanizeNumbers(lower)
+        if romanized != lower {
+            if let game = games.first(where: { $0.displayName.lowercased().contains(romanized) }) {
+                return game
+            }
+            if let game = games.first(where: { romanized.contains($0.displayName.lowercased()) }) {
+                return game
+            }
+        }
         return nil
     }
 
@@ -334,7 +360,30 @@ final class VoiceCoordinator: @unchecked Sendable {
         if let game = games.first(where: { $0.title.lowercased().contains(lower) }) {
             return game
         }
+        // Fuzzy: strip non-alphanumeric and compare
+        let inputStripped = lower.filter { $0.isLetter || $0.isNumber }
+        for game in games {
+            let gameStripped = game.title.lowercased().filter { $0.isLetter || $0.isNumber }
+            if inputStripped == gameStripped || gameStripped.contains(inputStripped) {
+                return game
+            }
+        }
+        // Fuzzy: convert numbers to roman numerals and try again
+        let romanized = Self.romanizeNumbers(lower)
+        if romanized != lower {
+            if let game = games.first(where: { $0.title.lowercased().contains(romanized) }) {
+                return game
+            }
+        }
         return nil
+    }
+
+    /// Convert arabic numerals to roman numerals for fuzzy game name matching.
+    nonisolated private static func romanizeNumbers(_ text: String) -> String {
+        let words = text.split(separator: " ").map(String.init)
+        let map = ["10": "x", "9": "ix", "8": "viii", "7": "vii", "6": "vi",
+                    "5": "v", "4": "iv", "3": "iii", "2": "ii", "1": "i"]
+        return words.map { word in map[word] ?? word }.joined(separator: " ")
     }
 }
 

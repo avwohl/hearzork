@@ -358,9 +358,11 @@ final class SpeechInput: @unchecked Sendable {
 
             if let error {
                 let nsError = error as NSError
-                // All kAFAssistantErrorDomain errors are routine (cancellation,
-                // no speech, end-of-input). Only report truly unexpected errors.
-                if nsError.domain != "kAFAssistantErrorDomain" {
+                // Suppress routine errors: kAFAssistant (cancellation, no speech,
+                // end-of-input) and URL-layer cancellation from server recognition.
+                let isRoutine = nsError.domain == "kAFAssistantErrorDomain" ||
+                    (nsError.domain == NSURLErrorDomain && nsError.code == -999)
+                if !isRoutine {
                     let msg = error.localizedDescription
                     DispatchQueue.main.async {
                         MainActor.assumeIsolated { self.errorMessage = msg }
