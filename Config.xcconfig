@@ -1,1 +1,5 @@
 #include? "Local.xcconfig"
+
+// App version (shown to users) and build number (must increment per TestFlight upload).
+MARKETING_VERSION = 1.0
+CURRENT_PROJECT_VERSION = 2
