@@ -18,6 +18,8 @@ struct LibraryView: View {
     @State private var errorMessage: String?
     @State private var downloader = GameDownloader()
     @State private var selectedTab = 0
+    /// Shared reading-text size (same UserDefaults key the game console uses).
+    @AppStorage("fontSize") private var fontSize: Double = 28
 
     var body: some View {
         NavigationStack {
@@ -130,7 +132,7 @@ struct LibraryView: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(game.title)
-                    .font(.headline)
+                    .font(.system(size: fontSize, weight: .semibold))
                 Text(game.author)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -240,7 +242,7 @@ struct LibraryView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(game.displayName)
-                        .font(.headline)
+                        .font(.system(size: fontSize, weight: .semibold))
                     HStack(spacing: 12) {
                         Text("V\(game.version)")
                             .font(.caption)
@@ -327,6 +329,20 @@ struct LibraryView: View {
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
             HStack(spacing: 12) {
+                Button {
+                    fontSize = max(fontSize - 4, 12)
+                } label: {
+                    Image(systemName: "textformat.size.smaller")
+                }
+                .accessibilityLabel("Smaller text")
+
+                Button {
+                    fontSize = min(fontSize + 4, 72)
+                } label: {
+                    Image(systemName: "textformat.size.larger")
+                }
+                .accessibilityLabel("Larger text")
+
                 Button {
                     Task { await toggleVoice() }
                 } label: {
