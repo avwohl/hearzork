@@ -67,8 +67,10 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         let proc = Processor(memory: memory, io: self)
         self.processor = proc
 
-        // Populate voice vocabulary from game dictionary
+        // Populate voice vocabulary from game dictionary (version drives the
+        // truncation length used for matching).
         let words = proc.dictionary.allWords(decoder: proc.textDecoder)
+        speechInput.gameVersion = memory.version
         speechInput.gameVocabulary = words
 
         gameTask = Task { [weak self] in
@@ -123,6 +125,9 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
             voiceCoordinator = coord
             speechInput = coord.speechInput
             speechOutput = coord.speechOutput
+            // Re-apply this game's vocabulary to the now-shared recogniser.
+            speechInput.gameVersion = processor?.version ?? 3
+            speechInput.gameVocabulary = dictionaryWords()
         }
         if enabled && !speechInput.isAuthorized {
             let authorized = await speechInput.requestAuthorization()
@@ -135,17 +140,21 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     /// Start voice listening and submit the result as game input.
     func listenForInput() async {
         guard voiceMode, isWaitingForInput else { return }
-        // Ensure TTS is done before opening mic (avoid hearing ourselves)
-        if speechOutput.isSpeaking {
-            speechOutput.stop()
+        // No mic-muting or sleeps: echo cancellation (AudioGraph) keeps the
+        // recogniser from hearing our own TTS, so we can listen immediately.
+        var attempts = 0
+        while isWaitingForInput && attempts < 3 {
+            attempts += 1
+            let raw = await speechInput.listen()
+            let corrected = speechInput.correctWithVocabulary(raw)
+            if corrected.isEmpty {
+                await speechOutput.speakAndWait("I didn't catch that.")
+                continue
+            }
+            if handleMetaCommand(corrected) { return }
+            submitInput(corrected)
+            return
         }
-        await delayMs(300)
-        let raw = await speechInput.listen()
-        guard !raw.isEmpty else { return }
-        let corrected = speechInput.correctWithVocabulary(raw)
-        // Check for meta voice commands
-        if handleMetaCommand(corrected) { return }
-        submitInput(corrected)
     }
 
     /// Speak new output lines that haven't been spoken yet.
@@ -159,10 +168,8 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         let text = newLines.map(\.text).joined(separator: " ")
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        speechInput.stopListening()
+        // TTS renders through the echo-cancelled engine; no muting/sleep needed.
         await speechOutput.speakAndWait(trimmed)
-        // Pause for echo to fade before mic reopens
-        await delayMs(300)
     }
 
     /// Handle meta voice commands (save, restore, repeat, etc.).
@@ -404,12 +411,4 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
         return proc.dictionary.allWords(decoder: proc.textDecoder)
     }
 
-    /// Delay using GCD instead of Task.sleep (which stalls on MainActor).
-    private func delayMs(_ ms: Int) async {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(ms)) {
-                continuation.resume()
-            }
-        }
-    }
 }
