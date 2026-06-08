@@ -37,7 +37,10 @@ Local.xcconfig
 # …but commit the freely-distributable / public-domain test fixtures.
 # (Copyrighted games like zork1.z3 remain ignored above.)
 !Tests/Fixtures/advent.z3
+!Tests/Fixtures/czech.z3
+!Tests/Fixtures/czech.z4
 !Tests/Fixtures/czech.z5
+!Tests/Fixtures/czech.z8
 !Tests/Fixtures/praxix.z5
 !Tests/Fixtures/strictz.z5
 !Tests/Fixtures/gntests.z5
