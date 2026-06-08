@@ -78,8 +78,13 @@ final class Dictionary {
         let textLength: Int
 
         if version <= 4 {
-            textLength = Int(memory.readByte(textBuffer + 1))
+            // V1-4: text starts at byte 1 and is zero-terminated; there is no count
+            // byte, so scan to the terminator (bounded by the buffer's max length).
             textStart = textBuffer + 1
+            let maxLen = Int(memory.readByte(textBuffer))
+            var n = 0
+            while n < maxLen && memory.readByte(textStart + n) != 0 { n += 1 }
+            textLength = n
         } else {
             textLength = Int(memory.readByte(textBuffer + 1))
             textStart = textBuffer + 2

@@ -26,10 +26,10 @@ final class Processor: @unchecked Sendable {
     var version: Int { memory.version }
 
     // Undo state
-    private var undoSnapshots: [(dynamic: [UInt8], stack: [StackFrame], frame: StackFrame, pc: Int)] = []
+    private var undoSnapshots: [(dynamic: [UInt8], stack: [StackFrame], frame: StackFrame, pc: Int, storeVar: UInt8?)] = []
 
     // Output streams
-    private var outputStream3Buffers: [[UInt8]] = [] // nested stream 3 buffers
+    private var outputStream3: [(table: Int, buffer: [UInt8])] = [] // nested stream 3 redirections
     private var outputStream1Active = true
     private var outputStream2Active = false
 
@@ -236,11 +236,14 @@ final class Processor: @unchecked Sendable {
     // MARK: - Print helper
 
     func printString(_ text: String) {
-        if !outputStream3Buffers.isEmpty {
-            // Output stream 3 is active: capture to buffer
-            for ch in text.utf8 {
-                outputStream3Buffers[outputStream3Buffers.count - 1].append(ch)
+        if !outputStream3.isEmpty {
+            // Output stream 3 takes priority: capture ZSCII bytes to the
+            // innermost table and send nothing to the screen/transcript
+            // (Z-Machine Standard §7.1.2.1).
+            for scalar in text.unicodeScalars {
+                outputStream3[outputStream3.count - 1].buffer.append(textDecoder.zsciiCode(for: scalar))
             }
+            return
         }
         if outputStream1Active {
             io.print(text)
@@ -474,19 +477,14 @@ final class Processor: @unchecked Sendable {
         case 0x1B: // set_colour (V5+)
             io.setColor(foreground: Int(a), background: Int(b))
         case 0x1C: // throw (V5+)
-            // Throw: unwind stack to frame b, return value a
-            let targetDepth = Int(b)
-            while callStack.count > targetDepth {
-                _ = callStack.popLast()
+            // Unwind call frames down to the routine that executed the matching
+            // catch (its frame depth == b), then return value a as if that
+            // routine had returned it (Z-Machine Standard §15).
+            let frameToken = Int(b)
+            while callStack.count > frameToken {
+                currentFrame = callStack.removeLast()
             }
-            if let frame = callStack.popLast() {
-                let storeVar = currentFrame.storeVariable
-                pc = currentFrame.returnPC
-                currentFrame = frame
-                if let sv = storeVar {
-                    writeVariable(sv, value: a)
-                }
-            }
+            returnValue(a)
         default:
             break
         }
@@ -536,13 +534,14 @@ final class Processor: @unchecked Sendable {
             // Write input to text buffer
             let inputBytes = Array(input.lowercased().utf8)
             if version <= 4 {
-                // V1-4: byte 1 = length, bytes 2+ = characters
-                memory.writeByte(Int(textBuf) + 1, value: UInt8(inputBytes.count))
+                // V1-4: characters stored from byte 1 onward, terminated by a zero byte.
+                // There is NO length byte in this layout (Z-Machine Standard §15).
                 for (i, byte) in inputBytes.enumerated() {
-                    memory.writeByte(Int(textBuf) + 2 + i, value: byte)
+                    memory.writeByte(Int(textBuf) + 1 + i, value: byte)
                 }
+                memory.writeByte(Int(textBuf) + 1 + inputBytes.count, value: 0)
             } else {
-                // V5+: byte 1 = length, bytes 2+ = characters
+                // V5+: byte 1 = actual char count, characters from byte 2 (no terminator).
                 memory.writeByte(Int(textBuf) + 1, value: UInt8(inputBytes.count))
                 for (i, byte) in inputBytes.enumerated() {
                     memory.writeByte(Int(textBuf) + 2 + i, value: byte)
@@ -646,16 +645,17 @@ final class Processor: @unchecked Sendable {
         case 0x13: // output_stream
             let stream = signed(resolveOperand(inst, 0))
             if stream == 3 {
-                // Open stream 3 to table
-                let table = resolveOperand(inst, 1)
-                outputStream3Buffers.append([])
-                _ = table // will write to table address when stream closed
+                // Open stream 3, redirecting output to a table in memory.
+                let table = Int(resolveOperand(inst, 1))
+                outputStream3.append((table: table, buffer: []))
             } else if stream == -3 {
-                // Close stream 3
-                if let buffer = outputStream3Buffers.popLast() {
-                    // Write to the table that was specified when opening
-                    // For now, just discard - full implementation needs table address tracking
-                    _ = buffer
+                // Close the innermost stream 3: write the count word followed
+                // by the captured bytes to its table.
+                if let entry = outputStream3.popLast() {
+                    memory.writeWord(entry.table, value: UInt16(truncatingIfNeeded: entry.buffer.count))
+                    for (i, byte) in entry.buffer.enumerated() {
+                        memory.writeByte(entry.table + 2 + i, value: byte)
+                    }
                 }
             } else if stream == 1 {
                 outputStream1Active = true
@@ -820,7 +820,8 @@ final class Processor: @unchecked Sendable {
                 dynamic: memory.dynamicSnapshot(),
                 stack: callStack,
                 frame: currentFrame,
-                pc: pc
+                pc: pc,
+                storeVar: inst.storeVariable
             )
             undoSnapshots.append(snapshot)
             // Keep at most 10 undo states
@@ -835,11 +836,14 @@ final class Processor: @unchecked Sendable {
                 callStack = snapshot.stack
                 currentFrame = snapshot.frame
                 pc = snapshot.pc
-                // The restore_undo instruction that was executing stored to a variable;
-                // we need to store 2 (success, restored) there
-                store(inst, value: 2)
+                // Resume as if the original save_undo returned 2 (success/
+                // restored): store into SAVE_UNDO's result variable, which the
+                // snapshot recorded — not restore_undo's.
+                if let sv = snapshot.storeVar {
+                    writeVariable(sv, value: 2)
+                }
             } else {
-                store(inst, value: 0) // failure
+                store(inst, value: 0) // failure: restore_undo itself returns 0
             }
 
         case 0x0B: // print_unicode (V5+)

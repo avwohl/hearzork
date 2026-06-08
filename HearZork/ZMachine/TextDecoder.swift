@@ -205,30 +205,44 @@ final class TextDecoder {
         return decodeZChars(zchars, allowAbbreviations: false)
     }
 
+    /// Default Unicode translation table for extended ZSCII codes 155...251
+    /// (Z-Machine Standard §3.8.5). Index 0 corresponds to ZSCII code 155.
+    static let extendedZSCII: [UInt16] = [
+        0xE4, 0xF6, 0xFC, 0xC4, 0xD6, 0xDC, 0xDF, 0xBB, 0xAB, // 155-163
+        0xEB, 0xEF, 0xFF, 0xCB, 0xCF, 0xE1, 0xE9, 0xED, 0xF3, // 164-172
+        0xFA, 0xFD, 0xC1, 0xC9, 0xCD, 0xD3, 0xDA, 0xDD, 0xE0, // 173-181
+        0xE8, 0xEC, 0xF2, 0xF9, 0xC0, 0xC8, 0xCC, 0xD2, 0xD9, // 182-190
+        0xE2, 0xEA, 0xEE, 0xF4, 0xFB, 0xC2, 0xCA, 0xCE, 0xD4, // 191-199
+        0xDB, 0xE5, 0xC5, 0xF8, 0xD8, 0xE3, 0xF1, 0xF5, 0xC3, // 200-208 (å Å ø Ø included)
+        0xD1, 0xD5, 0xE6, 0xC6, 0xE7, 0xC7, 0xFE, 0xF0, 0xDE, // 209-217
+        0xD0, 0xA3, 0x153, 0x152, 0xA1, 0xBF                  // 218-223
+    ]
+
     func zsciiToCharacter(_ code: UInt16) -> Character? {
         switch code {
         case 0: return nil
         case 13: return "\n"
         case 32...126: return Character(UnicodeScalar(UInt32(code))!)
         case 155...251:
-            // Extended characters -- use default Unicode translation table
-            let extTable: [UInt16] = [
-                0xE4, 0xF6, 0xFC, 0xC4, 0xD6, 0xDC, 0xDF, 0xBB, 0xAB,
-                0xEB, 0xEF, 0xFF, 0xCB, 0xCF, 0xE1, 0xE9, 0xED, 0xF3,
-                0xFA, 0xFD, 0xC1, 0xC9, 0xCD, 0xD3, 0xDA, 0xDD, 0xE0,
-                0xE8, 0xEC, 0xF2, 0xF9, 0xC0, 0xC8, 0xCC, 0xD2, 0xD9,
-                0xE2, 0xEA, 0xEE, 0xF4, 0xFB, 0xC2, 0xCA, 0xCE, 0xD4,
-                0xDB, 0xE3, 0xF1, 0xF5, 0xC3, 0xD1, 0xD5, 0xE6, 0xC6,
-                0xE7, 0xC7, 0xFE, 0xF0, 0xDE, 0xD0, 0xA3, 0x153, 0x152,
-                0xA1, 0xBF
-            ]
             let idx = Int(code) - 155
-            if idx < extTable.count, let scalar = UnicodeScalar(extTable[idx]) {
+            if idx < Self.extendedZSCII.count, let scalar = UnicodeScalar(Self.extendedZSCII[idx]) {
                 return Character(scalar)
             }
             return nil
         default: return nil
         }
+    }
+
+    /// Encode one Unicode scalar to an output ZSCII byte (inverse of
+    /// zsciiToCharacter). Used when capturing printed text to output stream 3.
+    func zsciiCode(for scalar: UnicodeScalar) -> UInt8 {
+        if scalar == "\n" { return 13 }
+        let v = scalar.value
+        if v >= 32 && v <= 126 { return UInt8(v) }
+        if let idx = Self.extendedZSCII.firstIndex(of: UInt16(truncatingIfNeeded: v)) {
+            return UInt8(155 + idx)
+        }
+        return 63 // '?' for anything outside the representable ZSCII set
     }
 }
 
