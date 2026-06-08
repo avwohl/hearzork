@@ -15,7 +15,11 @@ final class GameViewModel: IOSystem, @unchecked Sendable {
     var isWaitingForChar = false
     var isRunning = false
     var gameName: String = ""
-    var fontSize: CGFloat = 18
+    /// Game-text size. Defaults large (28pt) for low-vision readers and persists
+    /// adjustments across games/launches.
+    var fontSize: CGFloat = CGFloat(UserDefaults.standard.object(forKey: "fontSize") as? Double ?? 28) {
+        didSet { UserDefaults.standard.set(Double(fontSize), forKey: "fontSize") }
+    }
 
     // Upper window state
     var upperWindowLines: Int = 0

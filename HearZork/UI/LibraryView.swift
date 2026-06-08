@@ -11,6 +11,7 @@ struct LibraryView: View {
     @State private var showFilePicker = false
     @State private var showURLInput = false
     @State private var showAbout = false
+    @State private var showProbe = false
     @State private var urlText = ""
     @State private var selectedGame: GameFile?
     @State private var launchWithVoice = false
@@ -46,6 +47,7 @@ struct LibraryView: View {
             }
             .sheet(isPresented: $showURLInput) { urlInputSheet }
             .sheet(isPresented: $showAbout) { AboutView() }
+            .sheet(isPresented: $showProbe) { AECProbeView(voice: voice) }
             .alert("Error", isPresented: .init(
                 get: { (errorMessage ?? downloader.errorMessage) != nil },
                 set: { if !$0 { errorMessage = nil; downloader.errorMessage = nil } }
@@ -344,6 +346,9 @@ struct LibraryView: View {
                     Button("About HearZork", systemImage: "info.circle") {
                         showAbout = true
                     }
+                    Button("Voice Diagnostics", systemImage: "waveform.badge.mic") {
+                        showProbe = true
+                    }
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -581,6 +586,20 @@ struct GameScreen: View {
                     }
                     ToolbarItem(placement: .primaryAction) {
                         HStack(spacing: 12) {
+                            Button {
+                                vm.fontSize = max(vm.fontSize - 4, 12)
+                            } label: {
+                                Image(systemName: "textformat.size.smaller")
+                            }
+                            .accessibilityLabel("Smaller text")
+
+                            Button {
+                                vm.fontSize = min(vm.fontSize + 4, 72)
+                            } label: {
+                                Image(systemName: "textformat.size.larger")
+                            }
+                            .accessibilityLabel("Larger text")
+
                             Button {
                                 Task {
                                     await vm.setVoiceMode(!vm.voiceMode, coordinator: voice)
