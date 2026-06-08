@@ -157,12 +157,14 @@ final class ObjectTable {
     // MARK: - Property table
 
     func propertyTableAddress(_ obj: Int) -> Int {
+        guard obj > 0 else { return 0 } // object 0 is "nothing"; its address points into the defaults table
         let addr = objectAddress(obj) + attributeBytes + relationshipSize * 3
         return Int(memory.readWord(addr))
     }
 
     /// Get the short name of an object (from its property table header).
     func shortName(_ obj: Int, decoder: TextDecoder) -> String {
+        guard obj > 0 else { return "" }
         let ptAddr = propertyTableAddress(obj)
         let textLen = Int(memory.readByte(ptAddr)) // word count
         if textLen == 0 { return "" }
@@ -216,6 +218,7 @@ final class ObjectTable {
 
     /// Get the next property number after the given one (0 = get first property).
     func getNextProperty(_ obj: Int, after prop: Int) -> Int {
+        guard obj > 0 else { return 0 } // get_next_prop 0 must not read object 0's "property table"
         let ptAddr = propertyTableAddress(obj)
         let textLen = Int(memory.readByte(ptAddr))
         var addr = ptAddr + 1 + textLen * 2

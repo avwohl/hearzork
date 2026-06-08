@@ -32,8 +32,7 @@ struct Header {
         switch version {
         case 1...3: return raw * 2
         case 4...5: return raw * 4
-        case 6, 7:  return raw * 4
-        case 8:     return raw * 8
+        case 6...8: return raw * 8   // ZMSD §11.1.6: x8 for V6, V7 and V8
         default:    return raw * 2
         }
     }
@@ -78,11 +77,13 @@ struct Header {
         }
         memory.writeByte(0x01, value: f1)
 
-        // Flags 2: declare undo support for V5+
+        // Flags 2 is the word at $10; its undo bit (bit 4 = word value $0010)
+        // lives in the LOW byte $11, not the high byte $10. Advertise undo for
+        // V5+ (hearzork implements save_undo/restore_undo).
         if version >= 5 {
-            var f2 = memory.readByte(0x10)
-            f2 |= 0x10 // undo available
-            memory.writeByte(0x10, value: f2)
+            var f2lo = memory.readByte(0x11)
+            f2lo |= 0x10 // Flags 2 bit 4: undo available
+            memory.writeByte(0x11, value: f2lo)
         }
 
         // Standard revision 1.1
