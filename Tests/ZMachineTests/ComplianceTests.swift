@@ -6,11 +6,9 @@ import XCTest
 /// TerpEtude tests I/O and screen handling.
 final class ComplianceTests: XCTestCase {
 
-    /// Load a story file from the zwalker games directory.
+    /// Load a story fixture (skips the test if absent).
     func loadStory(_ name: String) throws -> Data {
-        let path = "/Users/wohl/src/zwalker/games/zcode/\(name)"
-        let url = URL(fileURLWithPath: path)
-        return try Data(contentsOf: url)
+        try TestFixtures.load(name)
     }
 
     /// Run a story file to completion or timeout, returning captured output.
@@ -101,8 +99,7 @@ final class ComplianceTests: XCTestCase {
 
     func testCzechV5OutputMatchesExpected() async throws {
         let output = try await runStory("czech.z5")
-        let expectedPath = "/Users/wohl/src/zwalker/games/zcode/czech.out5"
-        let expected = try String(contentsOfFile: expectedPath, encoding: .utf8)
+        let expected = try String(contentsOf: TestFixtures.url("czech.out5"), encoding: .utf8)
 
         // Compare line by line, skipping header info that varies per interpreter
         let outputLines = output.components(separatedBy: "\n")

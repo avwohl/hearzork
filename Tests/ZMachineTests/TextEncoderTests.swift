@@ -29,7 +29,7 @@ final class TextEncoderTests: XCTestCase {
     }
 
     func testDictionaryLookupRoundtrip() throws {
-        let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/wohl/src/zwalker/games/zcode/zork1.z3"))
+        let data = try TestFixtures.load("zork1.z3")
         let memory = try Memory(storyData: data)
         let dict = Dictionary(memory: memory)
         let decoder = TextDecoder(memory: memory)

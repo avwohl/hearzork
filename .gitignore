@@ -33,3 +33,11 @@ Local.xcconfig
 *.z6
 *.z7
 *.z8
+
+# …but commit the freely-distributable / public-domain test fixtures.
+# (Copyrighted games like zork1.z3 remain ignored above.)
+!Tests/Fixtures/advent.z3
+!Tests/Fixtures/czech.z5
+!Tests/Fixtures/praxix.z5
+!Tests/Fixtures/strictz.z5
+!Tests/Fixtures/gntests.z5

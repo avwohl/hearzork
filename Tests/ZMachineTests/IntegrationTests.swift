@@ -3,11 +3,9 @@ import XCTest
 
 final class IntegrationTests: XCTestCase {
 
-    /// Load a Z-machine story file from the zwalker games directory.
+    /// Load a Z-machine story fixture (skips the test if absent).
     func loadStory(_ name: String) throws -> Data {
-        let path = "/Users/wohl/src/zwalker/games/zcode/\(name)"
-        let url = URL(fileURLWithPath: path)
-        return try Data(contentsOf: url)
+        try TestFixtures.load(name)
     }
 
     func testZork1Loads() throws {
